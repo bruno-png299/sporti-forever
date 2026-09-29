@@ -1,0 +1,591 @@
+/* =========================================================
+CONFIGURAÇÕES GERAIS
+========================================================= */
+
+/*
+Variáveis de cores do site.
+Alterando estes valores, podemos mudar a identidade visual.
+*/
+:root {
+--cor-principal: #0d1b2a;
+--cor-secundaria: #1b263b;
+--cor-destaque: #00c853;
+--cor-destaque-hover: #00a844;
+
+--cor-fundo: #f4f6f8;
+--cor-fundo-card: #ffffff;
+
+--cor-texto: #1a1a1a;
+--cor-texto-claro: #ffffff;
+--cor-texto-secundario: #555555;
+
+--cor-borda: #d9dfe5;
+
+--sombra: 0 4px 12px rgba(0, 0, 0, 0.10);
+
+--raio: 10px;
+
+}
+
+/*
+O seletor * significa "todos os elementos".
+Aqui removemos configurações padrão do navegador.
+*/
+
+*{
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+
+/* Permite uma rolagem suave quando clicamos nos links do menu */
+html {
+scroll-behavior: smooth;
+}
+
+/* Configurações gerais da página */
+body {
+font-family: Arial, Helvetica, sans-serif;
+background-color: var(--cor-fundo);
+color: var(--cor-texto);
+line-height: 1.6;
+}
+
+/*
+Container centraliza o conteúdo e impede que ele
+fique muito largo em telas grandes.
+*/
+.container {
+width: 90%;
+max-width: 1200px;
+margin: 0 auto;
+}
+
+/* =========================================================
+CABEÇALHO
+========================================================= */
+
+header {
+background-color: var(--cor-principal);
+color: var(--cor-texto-claro);
+padding: 20px 0;
+
+/*
+   Mantém o cabeçalho visível enquanto o usuário rola
+   a página.
+*/
+position: sticky;
+top: 0;
+
+z-index: 1000;
+
+box-shadow: var(--sombra);
+
+}
+
+/* Organiza o nome do site e o menu */
+header .container {
+display: flex;
+justify-content: space-between;
+align-items: center;
+gap: 20px;
+}
+
+/* Nome SportZone */
+header h1 {
+font-size: 2rem;
+color: var(--cor-destaque);
+}
+
+/* Remove as bolinhas da lista do menu */
+nav ul {
+list-style: none;
+
+display: flex;
+
+gap: 25px;
+
+}
+
+/* Links do menu */
+nav a {
+color: var(--cor-texto-claro);
+
+text-decoration: none;
+
+font-weight: bold;
+
+transition: color 0.3s ease;
+
+}
+
+/* Efeito quando o mouse passa sobre o link */
+nav a:hover {
+color: var(--cor-destaque);
+}
+
+/* =========================================================
+HERO
+========================================================= */
+
+/*
+Área principal de abertura do site.
+
+A imagem hero.jpg deve estar dentro da pasta imagens.
+*/
+.hero {
+min-height: 500px;
+
+/*
+   Criamos uma camada escura sobre a imagem.
+   Isso melhora a leitura do texto.
+*/
+background-image:
+    linear-gradient(
+        rgba(13, 27, 42, 0.72),
+        rgba(13, 27, 42, 0.72)
+    ),
+    url("imagens/hero.jpg");
+
+background-size: cover;
+
+background-position: center;
+
+display: flex;
+
+align-items: center;
+
+justify-content: center;
+
+text-align: center;
+
+color: var(--cor-texto-claro);
+
+padding: 60px 20px;
+
+}
+
+/* Limita a largura do conteúdo do Hero */
+.hero-conteudo {
+max-width: 800px;
+}
+
+/* Título principal do Hero */
+.hero h2 {
+font-size: 3rem;
+
+margin-bottom: 20px;
+
+}
+
+/* Texto do Hero */
+.hero p {
+font-size: 1.2rem;
+}
+
+/* =========================================================
+SEÇÕES GERAIS
+========================================================= */
+
+.secao-explicativa,
+.secao-cadastro,
+.secao-produtos,
+.secao-contato {
+padding: 70px 0;
+}
+
+/* Títulos das seções */
+.secao-explicativa h2,
+.secao-cadastro h2,
+.secao-produtos h2,
+.secao-contato h2 {
+font-size: 2rem;
+
+margin-bottom: 20px;
+
+color: var(--cor-principal);
+
+}
+
+/* Textos das seções */
+.secao-explicativa p,
+.secao-cadastro p,
+.secao-produtos p,
+.secao-contato p {
+margin-bottom: 15px;
+
+color: var(--cor-texto-secundario);
+
+}
+
+/* =========================================================
+GALERIA DE IMAGENS
+========================================================= */
+
+.galeria-problema {
+/*
+Cria duas colunas para as imagens.
+*/
+display: grid;
+
+grid-template-columns: repeat(2, 1fr);
+
+gap: 30px;
+
+margin-top: 35px;
+
+}
+
+/* Cada bloco de imagem */
+.galeria-problema figure {
+background-color: var(--cor-fundo-card);
+
+border-radius: var(--raio);
+
+overflow: hidden;
+
+box-shadow: var(--sombra);
+
+}
+
+/* Imagens */
+.galeria-problema img {
+width: 100%;
+
+height: 280px;
+
+object-fit: cover;
+
+display: block;
+
+}
+
+/* Legendas */
+.galeria-problema figcaption {
+padding: 18px;
+
+color: var(--cor-texto-secundario);
+
+font-size: 0.95rem;
+
+}
+
+/* =========================================================
+FORMULÁRIO
+========================================================= */
+
+.secao-cadastro {
+background-color: #e9eef2;
+}
+
+/* Caixa do formulário */
+form {
+background-color: var(--cor-fundo-card);
+
+padding: 30px;
+
+border-radius: var(--raio);
+
+box-shadow: var(--sombra);
+
+max-width: 800px;
+
+margin-top: 30px;
+
+}
+
+/* Cada grupo do formulário */
+.campo-formulario {
+margin-bottom: 22px;
+}
+
+/* Texto acima dos campos */
+.campo-formulario label {
+display: block;
+
+font-weight: bold;
+
+margin-bottom: 8px;
+
+color: var(--cor-principal);
+
+}
+
+/*
+Configura os campos de texto,
+seleção e descrição.
+*/
+.campo-formulario input,
+.campo-formulario select,
+.campo-formulario textarea {
+width: 100%;
+
+padding: 12px 14px;
+
+border: 1px solid var(--cor-borda);
+
+border-radius: 6px;
+
+font-size: 1rem;
+
+font-family: inherit;
+
+background-color: #ffffff;
+
+color: var(--cor-texto);
+
+}
+
+/*
+Destaca o campo que está sendo preenchido.
+*/
+.campo-formulario input:focus,
+.campo-formulario select:focus,
+.campo-formulario textarea:focus {
+outline: 3px solid rgba(0, 200, 83, 0.25);
+
+border-color: var(--cor-destaque);
+
+}
+
+/* Permite aumentar verticalmente a área de descrição */
+.campo-formulario textarea {
+resize: vertical;
+}
+
+/* =========================================================
+BOTÕES
+========================================================= */
+
+button {
+border: none;
+
+background-color: var(--cor-destaque);
+
+color: #000000;
+
+padding: 13px 22px;
+
+border-radius: 6px;
+
+font-size: 1rem;
+
+font-weight: bold;
+
+cursor: pointer;
+
+transition:
+    background-color 0.3s ease,
+    transform 0.2s ease;
+
+}
+
+/* Efeito ao passar o mouse */
+button:hover {
+background-color: var(--cor-destaque-hover);
+
+transform: translateY(-2px);
+
+}
+
+/* =========================================================
+ÁREA DE PRODUTOS
+========================================================= */
+
+.secao-produtos {
+background-color: var(--cor-fundo);
+}
+
+/*
+Espaço onde o JavaScript colocará os produtos.
+*/
+#lista {
+margin-top: 30px;
+}
+
+/*
+Estilo inicial dos cards.
+
+Posteriormente o JavaScript vai criar esses cards.
+*/
+.card-produto {
+background-color: var(--cor-fundo-card);
+
+border-radius: var(--raio);
+
+padding: 20px;
+
+box-shadow: var(--sombra);
+
+margin-bottom: 20px;
+
+}
+
+/* =========================================================
+SEÇÃO DE CONTATO
+========================================================= */
+
+.secao-contato {
+background-color: #ffffff;
+}
+
+/* =========================================================
+RODAPÉ
+========================================================= */
+
+footer {
+background-color: var(--cor-principal);
+
+color: var(--cor-texto-claro);
+
+padding: 35px 0;
+
+}
+
+/* Espaçamento entre os textos do rodapé */
+footer p {
+margin-bottom: 8px;
+}
+
+/*
+Organiza o nome da escola e os dois brasões.
+*/
+.identificacao-escola {
+display: flex;
+
+align-items: center;
+
+gap: 15px;
+
+margin-top: 15px;
+
+}
+
+/*
+Tamanho dos brasões.
+
+object-fit: contain mantém a proporção original
+da imagem para não deformar o brasão.
+*/
+.identificacao-escola img {
+width: 60px;
+
+height: 60px;
+
+object-fit: contain;
+
+}
+
+/* =========================================================
+RESPONSIVIDADE
+========================================================= */
+
+/*
+Estas regras são aplicadas em telas de até 640px,
+principalmente celulares.
+*/
+@media (max-width: 640px) {
+
+/* -----------------------------------------------------
+   CABEÇALHO
+   ----------------------------------------------------- */
+
+header .container {
+    flex-direction: column;
+
+    text-align: center;
+}
+
+
+/* Menu passa para uma coluna */
+nav ul {
+    flex-direction: column;
+
+    align-items: center;
+
+    gap: 10px;
+}
+
+
+/* -----------------------------------------------------
+   HERO
+   ----------------------------------------------------- */
+
+.hero {
+    min-height: 450px;
+
+    padding: 40px 20px;
+}
+
+
+.hero h2 {
+    font-size: 2rem;
+}
+
+
+.hero p {
+    font-size: 1rem;
+}
+
+
+/* -----------------------------------------------------
+   SEÇÕES
+   ----------------------------------------------------- */
+
+.secao-explicativa,
+.secao-cadastro,
+.secao-produtos,
+.secao-contato {
+    padding: 45px 0;
+}
+
+
+/* -----------------------------------------------------
+   GALERIA
+   ----------------------------------------------------- */
+
+/*
+   No celular, as imagens ficam uma abaixo da outra.
+*/
+.galeria-problema {
+    grid-template-columns: 1fr;
+
+    gap: 20px;
+}
+
+
+.galeria-problema img {
+    height: 230px;
+}
+
+
+/* -----------------------------------------------------
+   FORMULÁRIO
+   ----------------------------------------------------- */
+
+form {
+    padding: 20px;
+}
+
+
+/* -----------------------------------------------------
+   RODAPÉ
+   ----------------------------------------------------- */
+
+/*
+   Permite que o conteúdo do rodapé quebre
+   para a próxima linha em telas pequenas.
+*/
+.identificacao-escola {
+    flex-wrap: wrap;
+}
+
+
+/* Brasões menores no celular */
+.identificacao-escola img {
+    width: 50px;
+
+    height: 50px;
+}
+
+}

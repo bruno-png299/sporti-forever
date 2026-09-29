@@ -1,0 +1,397 @@
+<!-- =========================================================
+     1. CABEÇALHO
+     Nome do projeto e menu de navegação.
+     ========================================================= -->
+<header>
+    <link rel="stylesheet" href="style.css">
+
+    <div class="container">
+
+        <!-- Nome da cooperativa -->
+        <h1>SportZone</h1>
+
+        <!-- Menu principal -->
+        <nav aria-label="Navegação principal">
+            <ul>
+                <li>
+                    <a href="#inicio">Início</a>
+                </li>
+
+                <li>
+                    <a href="#problema">Sobre a SportZone</a>
+                </li>
+
+                <li>
+                    <a href="#produtos">Produtos</a>
+                </li>
+            </ul>
+        </nav>
+
+    </div>
+</header>
+
+
+<main>
+
+    <!-- =========================================================
+         2. ÁREA DE ABERTURA (HERO)
+         Apresenta a ideia principal da SportZone.
+         ========================================================= -->
+    <section id="inicio" class="hero">
+
+        <!--
+            A imagem de fundo será configurada posteriormente
+            no arquivo style.css.
+        -->
+        <div class="hero-conteudo">
+
+            <h2>Esporte de qualidade para todos.</h2>
+
+            <p>
+                A SportZone é uma cooperativa que busca conectar
+                pessoas, produtos esportivos e oportunidades,
+                incentivando o reaproveitamento e o acesso a
+                equipamentos de qualidade.
+            </p>
+
+        </div>
+    </section>
+
+
+    <!-- =========================================================
+         3. SEÇÃO EXPLICATIVA
+         Explica o problema e apresenta a proposta da cooperativa.
+         ========================================================= -->
+    <section id="problema" class="secao-explicativa">
+
+        <div class="container">
+
+            <h2>Sobre a SportZone</h2>
+
+            <p>
+                Muitas pessoas que praticam musculação e outros esportes
+                enfrentam dificuldades para encontrar equipamentos,
+                roupas e produtos esportivos de qualidade por preços
+                acessíveis.
+            </p>
+
+            <p>
+                Ao mesmo tempo, existem pessoas que possuem equipamentos,
+                pesos, roupas e outros produtos esportivos que não
+                utilizam mais e que poderiam ser aproveitados por outras
+                pessoas.
+            </p>
+
+            <p>
+                A SportZone surge como uma cooperativa para aproximar
+                essas pessoas. Quem possui produtos esportivos em boas
+                condições pode entrar em contato com a SportZone e
+                oferecer uma doação.
+            </p>
+
+            <p>
+                Além das doações, a SportZone também disponibiliza
+                alguns produtos para compra, como suplementos, pesos,
+                equipamentos de academia e roupas esportivas.
+            </p>
+
+
+            <!-- Área com imagens explicativas -->
+            <div class="galeria-problema">
+
+                <!-- Primeira imagem -->
+                <figure>
+                    <img
+                        src="imagens/problema-1.jpg"
+                        alt="Equipamentos esportivos que podem ser reaproveitados por outras pessoas"
+                    >
+
+                    <figcaption>
+                        Produtos esportivos em boas condições podem
+                        ganhar uma nova utilidade.
+                    </figcaption>
+                </figure>
+
+
+                <!-- Segunda imagem -->
+                <figure>
+                    <img
+                        src="imagens/problema-2.jpg"
+                        alt="Pessoa praticando musculação utilizando equipamentos de academia"
+                    >
+
+                    <figcaption>
+                        Nosso objetivo é facilitar o acesso ao esporte
+                        e incentivar escolhas conscientes.
+                    </figcaption>
+                </figure>
+
+            </div>
+
+        </div>
+    </section>
+
+
+    <!-- =========================================================
+         4. ÁREA DE DOAÇÃO
+         Formulário para pessoas que querem contribuir com a
+         cooperativa oferecendo produtos.
+         ========================================================= -->
+    <section id="doacao" class="secao-cadastro">
+
+        <div class="container">
+
+            <h2>Quero contribuir com a SportZone</h2>
+
+            <p>
+                Você possui um equipamento, peso, roupa ou outro produto
+                esportivo que não utiliza mais?
+            </p>
+
+            <p>
+                Preencha o formulário abaixo para informar à SportZone
+                sobre o produto que você deseja doar. Entraremos em
+                contato para obter mais informações sobre a doação.
+            </p>
+
+
+            <!--
+                Formulário de doação.
+
+                O JavaScript irá utilizar o id "formulario"
+                para capturar os dados preenchidos.
+            -->
+            <form id="formulario">
+
+                <!-- Campo 1: Nome do produto -->
+                <div class="campo-formulario">
+
+                    <label for="titulo">
+                        Nome do produto
+                    </label>
+
+                    <input
+                        type="text"
+                        id="titulo"
+                        name="titulo"
+                        placeholder="Ex.: Halteres de 10 kg"
+                        required
+                        minlength="3"
+                    >
+
+                </div>
+
+
+                <!-- Campo 2: Categoria -->
+                <div class="campo-formulario">
+
+                    <label for="categoria">
+                        Categoria do produto
+                    </label>
+
+                    <select
+                        id="categoria"
+                        name="categoria"
+                        required
+                    >
+                        <option value="">
+                            Selecione uma categoria
+                        </option>
+
+                        <option value="Equipamentos">
+                            Equipamentos
+                        </option>
+
+                        <option value="Pesos">
+                            Pesos
+                        </option>
+
+                        <option value="Roupas">
+                            Roupas esportivas
+                        </option>
+
+                        <option value="Suplementos">
+                            Suplementos
+                        </option>
+
+                        <option value="Outros">
+                            Outros
+                        </option>
+                    </select>
+
+                </div>
+
+
+                <!-- Campo 3: Nome e contato -->
+                <div class="campo-formulario">
+
+                    <label for="responsavel">
+                        Seu nome e contato
+                    </label>
+
+                    <input
+                        type="text"
+                        id="responsavel"
+                        name="responsavel"
+                        placeholder="Ex.: João - (41) 99999-9999"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- Campo 4: Descrição do produto -->
+                <div class="campo-formulario">
+
+                    <label for="descricao">
+                        Descrição detalhada do produto
+                    </label>
+
+                    <textarea
+                        id="descricao"
+                        name="descricao"
+                        rows="6"
+                        placeholder="Informe o estado do produto, marca, tamanho, quantidade e outras informações importantes..."
+                        required
+                        minlength="10"
+                    ></textarea>
+
+                </div>
+
+
+                <!-- Botão para enviar a intenção de doação -->
+                <button type="submit">
+                    Oferecer produto para doação
+                </button>
+
+            </form>
+
+        </div>
+    </section>
+
+
+    <!-- =========================================================
+         5. ÁREA DE PRODUTOS
+         Aqui serão exibidos os produtos cadastrados.
+         
+         Posteriormente, o JavaScript poderá diferenciar:
+         - produtos oferecidos para doação;
+         - produtos disponíveis para compra.
+         ========================================================= -->
+    <section id="produtos" class="secao-produtos">
+
+        <div class="container">
+
+            <h2>Produtos disponíveis</h2>
+
+            <p>
+                Confira alguns produtos esportivos disponibilizados
+                pela SportZone.
+            </p>
+
+
+            <!--
+                O JavaScript vai inserir os cards dos produtos
+                dentro desta div.
+            -->
+            <div id="lista">
+
+                <!--
+                    Esta mensagem será substituída pelo JavaScript
+                    quando os produtos forem carregados.
+                -->
+                <p>
+                    Nenhum produto disponível no momento.
+                </p>
+
+            </div>
+
+        </div>
+    </section>
+
+
+    <!-- =========================================================
+         6. SEÇÃO DE CONTATO
+         Explica como funciona o processo de doação.
+         ========================================================= -->
+    <section id="contato" class="secao-contato">
+
+        <div class="container">
+
+            <h2>Quer doar um produto?</h2>
+
+            <p>
+                Se você possui pesos, equipamentos, roupas esportivas
+                ou outros produtos em boas condições, entre em contato
+                com a SportZone através do formulário acima.
+            </p>
+
+            <p>
+                Nossa equipe poderá analisar as informações e entrar
+                em contato para combinar os próximos passos da doação.
+            </p>
+
+        </div>
+    </section>
+
+</main>
+
+
+<!-- =========================================================
+     7. RODAPÉ
+     Informações da equipe escolar.
+     ========================================================= -->
+<footer>
+
+    <div class="container">
+
+        <p>
+            <strong>SportZone</strong>
+        </p>
+
+        <p>
+            Cooperativa esportiva
+        </p>
+
+        <p>
+            Equipe: Nome do Aluno 1, Nome do Aluno 2, Nome do Aluno 3
+        </p>
+
+        <p>
+            Turma: 2º ano do Ensino Médio
+        </p>
+
+       <!-- Nome da escola acompanhado pelos dois brasões -->
+<div class="identificacao-escola">
+
+    <p>
+        Escola: Nome da Escola
+    </p>
+
+    <!-- Brasão do Paraná -->
+    <img
+        src="imagens/brasao-parana.png"
+        alt="Brasão do Estado do Paraná"
+    >
+
+    <!-- Brasão do colégio -->
+    <img
+        src="imagens/brasao-colegio.png"
+        alt="Brasão do colégio"
+    >
+
+</div>
+
+
+    </div>
+
+</footer>
+
+
+<!--
+    Conecta o HTML ao arquivo JavaScript.
+
+    O arquivo ainda estará vazio nesta etapa.
+-->
+<script src="script.js"></script>
+</body>
