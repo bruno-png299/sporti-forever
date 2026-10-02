@@ -7,19 +7,19 @@ Variáveis de cores do site.
 Alterando estes valores, podemos mudar a identidade visual.
 */
 :root {
---cor-principal: #0d1b2a;
---cor-secundaria: #1b263b;
---cor-destaque: #00c853;
---cor-destaque-hover: #00a844;
+--cor-principal: #080808;
+--cor-secundaria: #111111;
+--cor-destaque: #ffd400;
+--cor-destaque-hover: #e6bd00;
 
---cor-fundo: #f4f6f8;
---cor-fundo-card: #ffffff;
+--cor-fundo: #0f0f0f;
+--cor-fundo-card: #181818;
 
---cor-texto: #1a1a1a;
+--cor-texto: #f5f5f5;
 --cor-texto-claro: #ffffff;
---cor-texto-secundario: #555555;
+--cor-texto-secundario: #c4c4c4;
 
---cor-borda: #d9dfe5;
+--cor-borda: #333333;
 
 --sombra: 0 4px 12px rgba(0, 0, 0, 0.10);
 
@@ -91,6 +91,22 @@ align-items: center;
 gap: 20px;
 }
 
+/* Marca SportZone: logo ao lado do nome */
+.marca-sportzone {
+display: flex;
+align-items: center;
+gap: 10px;
+text-decoration: none;
+color: inherit;
+}
+
+.logo-sportzone {
+width: 46px;
+height: 46px;
+object-fit: contain;
+border-radius: 8px;
+}
+
 /* Nome SportZone */
 header h1 {
 font-size: 2rem;
@@ -142,8 +158,8 @@ min-height: 500px;
 */
 background-image:
     linear-gradient(
-        rgba(13, 27, 42, 0.72),
-        rgba(13, 27, 42, 0.72)
+        rgba(0, 0, 0, 0.78),
+        rgba(0, 0, 0, 0.78)
     ),
     url("imagens/hero.jpg");
 
@@ -203,7 +219,7 @@ font-size: 2rem;
 
 margin-bottom: 20px;
 
-color: var(--cor-principal);
+color: #ffffff;
 
 }
 
@@ -214,7 +230,7 @@ color: var(--cor-principal);
 .secao-contato p {
 margin-bottom: 15px;
 
-color: var(--cor-texto-secundario);
+color: #ffffff;
 
 }
 
@@ -264,7 +280,7 @@ display: block;
 .galeria-problema figcaption {
 padding: 18px;
 
-color: var(--cor-texto-secundario);
+color: #ffffff;
 
 font-size: 0.95rem;
 
@@ -275,7 +291,7 @@ FORMULÁRIO
 ========================================================= */
 
 .secao-cadastro {
-background-color: #e9eef2;
+background-color: #111111;
 }
 
 /* Caixa do formulário */
@@ -307,7 +323,7 @@ font-weight: bold;
 
 margin-bottom: 8px;
 
-color: var(--cor-principal);
+color: #ffffff;
 
 }
 
@@ -330,7 +346,7 @@ font-size: 1rem;
 
 font-family: inherit;
 
-background-color: #ffffff;
+background-color: #141414;
 
 color: var(--cor-texto);
 
@@ -342,7 +358,7 @@ Destaca o campo que está sendo preenchido.
 .campo-formulario input:focus,
 .campo-formulario select:focus,
 .campo-formulario textarea:focus {
-outline: 3px solid rgba(0, 200, 83, 0.25);
+outline: 3px solid rgba(255, 212, 0, 0.25);
 
 border-color: var(--cor-destaque);
 
@@ -362,7 +378,7 @@ border: none;
 
 background-color: var(--cor-destaque);
 
-color: #000000;
+color: #ffffff;
 
 padding: 13px 22px;
 
@@ -426,7 +442,7 @@ SEÇÃO DE CONTATO
 ========================================================= */
 
 .secao-contato {
-background-color: #ffffff;
+background-color: #141414;
 }
 
 /* =========================================================
@@ -477,6 +493,143 @@ object-fit: contain;
 }
 
 /* =========================================================
+
+/* =========================================================
+   LOGIN / AUTENTICAÇÃO
+   ========================================================= */
+
+.area-login {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.botao-login,
+.botao-sair {
+    padding: 9px 16px;
+    border-radius: 6px;
+    font-size: 0.95rem;
+}
+
+.botao-login {
+    background-color: var(--cor-destaque);
+    color: #ffffff;
+}
+
+.botao-login:hover {
+    background-color: var(--cor-destaque-hover);
+}
+
+.botao-sair {
+    background-color: transparent;
+    color: var(--cor-texto-claro);
+    border: 1px solid var(--cor-destaque);
+}
+
+.botao-sair:hover {
+    background-color: var(--cor-destaque);
+    color: #ffffff;
+}
+
+.usuario-logado {
+    color: var(--cor-destaque);
+    font-weight: bold;
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.modal-login {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.82);
+}
+
+.modal-login[hidden] {
+    display: none;
+}
+
+.caixa-login {
+    position: relative;
+    width: 100%;
+    max-width: 460px;
+    padding: 35px;
+    border: 1px solid var(--cor-destaque);
+    border-radius: var(--raio);
+    background: #151515;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.55);
+}
+
+.caixa-login h2 {
+    margin-bottom: 8px;
+    color: var(--cor-destaque);
+}
+
+.texto-login {
+    margin-bottom: 25px;
+    color: #ffffff;
+}
+
+.fechar-login {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    padding: 4px 10px;
+    background: transparent;
+    color: #ffffff;
+    font-size: 1.8rem;
+    line-height: 1;
+}
+
+.fechar-login:hover {
+    background: transparent;
+    color: var(--cor-destaque);
+    transform: none;
+}
+
+.caixa-login .campo-formulario input {
+    background: #0b0b0b;
+    color: #ffffff;
+    border-color: #3a3a3a;
+}
+
+.botao-login-principal {
+    width: 100%;
+    margin-top: 5px;
+}
+
+.mensagem-login {
+    min-height: 24px;
+    margin: 5px 0 10px;
+    color: var(--cor-destaque);
+    font-size: 0.9rem;
+}
+
+.troca-login {
+    margin-top: 20px;
+    text-align: center;
+    color: #ffffff;
+}
+
+.link-login {
+    padding: 0;
+    background: transparent;
+    color: var(--cor-destaque);
+    font-size: inherit;
+}
+
+.link-login:hover {
+    background: transparent;
+    transform: none;
+    text-decoration: underline;
+}
+
 RESPONSIVIDADE
 ========================================================= */
 
@@ -588,4 +741,166 @@ form {
     height: 50px;
 }
 
+}
+
+
+/* Informações do acesso à área de doação */
+.aviso-login-doacao {
+    margin: 0;
+    padding: 12px 16px;
+    border: 1px solid #f2c300;
+    border-radius: 8px;
+    color: #fff;
+    background: rgba(242, 195, 0, 0.08);
+}
+
+#formulario input:disabled,
+#formulario select:disabled,
+#formulario textarea:disabled,
+#formulario button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+
+/* =========================================================
+MODERAÇÃO DE DOAÇÕES
+========================================================= */
+.painel-admin {
+    background: #111;
+    color: #fff;
+    padding: 55px 0;
+    border-top: 2px solid #ffd000;
+    border-bottom: 2px solid #ffd000;
+}
+
+.painel-admin h2 {
+    color: #ffd000;
+    margin-bottom: 12px;
+}
+
+.painel-admin p {
+    color: #fff;
+}
+
+.card-admin {
+    background: #1c1c1c;
+    border: 1px solid #ffd000;
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.card-admin h3 {
+    color: #ffd000;
+    margin-bottom: 10px;
+}
+
+.card-admin button {
+    margin-right: 10px;
+    margin-top: 12px;
+}
+
+.aviso-analise {
+    background: #111;
+    color: #fff;
+    border: 1px solid #ffd000;
+    border-left: 5px solid #ffd000;
+    border-radius: 8px;
+    padding: 15px 18px;
+    margin-bottom: 20px;
+}
+
+.aviso-analise strong {
+    color: #ffd000;
+}
+
+/* =========================================================
+   POPUPS APRIMORADOS
+   ========================================================= */
+.popup-especial {
+    max-width: 520px;
+    padding: 38px;
+    text-align: center;
+    border-width: 2px;
+}
+
+.icone-popup {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--cor-destaque);
+    color: #111;
+    font-size: 1.8rem;
+    font-weight: 800;
+}
+
+.etiqueta-popup {
+    display: inline-block;
+    margin-bottom: 8px;
+    color: var(--cor-destaque);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+}
+
+.popup-especial h2 {
+    margin-bottom: 14px;
+    font-size: 1.65rem;
+}
+
+.texto-popup,
+.popup-especial > p {
+    color: #fff;
+    line-height: 1.65;
+    margin-bottom: 24px;
+}
+
+.popup-especial .botao-login-principal {
+    min-height: 46px;
+}
+
+.popup-erro .icone-popup {
+    background: #b00020;
+    color: #fff;
+}
+
+.popup-erro .etiqueta-popup {
+    color: #ff6b6b;
+}
+
+.endereco-admin {
+    margin: 18px 0;
+    padding: 16px;
+    border: 1px solid #444;
+    border-left: 4px solid #ffd000;
+    border-radius: 8px;
+    background: #121212;
+}
+
+.endereco-admin h4 {
+    margin-bottom: 12px;
+    color: #ffd000;
+    font-size: 1rem;
+}
+
+.endereco-admin p {
+    margin: 6px 0;
+    color: #fff;
+}
+
+@media (max-width: 640px) {
+    .popup-especial {
+        padding: 30px 22px;
+    }
+}
+
+.texto-login-dica {
+    margin-top: -14px;
+    font-size: 0.82rem;
+    opacity: 0.72;
 }
