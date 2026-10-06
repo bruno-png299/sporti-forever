@@ -90,6 +90,48 @@ FUNÇÃO: MOSTRAR OS REGISTROS
 Esta função é responsável por mostrar os registros
 cadastrados dentro da div #lista.
 */
+function criarGaleriaImagens(imagens, classeExtra = "") {
+    if (!Array.isArray(imagens) || imagens.length === 0) return null;
+
+    const galeria = document.createElement("div");
+    galeria.className = `imagens-produto ${classeExtra}`.trim();
+
+    imagens.forEach(function(src, indice) {
+        const imagem = document.createElement("img");
+        imagem.src = src;
+        imagem.alt = `Foto ${indice + 1} do produto`;
+        imagem.loading = "lazy";
+        galeria.appendChild(imagem);
+    });
+
+    return galeria;
+}
+
+function comprimirImagem(arquivo) {
+    return new Promise(function(resolve, reject) {
+        const leitor = new FileReader();
+        leitor.onload = function() {
+            const imagem = new Image();
+            imagem.onload = function() {
+                const limite = 1200;
+                const escala = Math.min(1, limite / Math.max(imagem.width, imagem.height));
+                const canvas = document.createElement("canvas");
+                canvas.width = Math.max(1, Math.round(imagem.width * escala));
+                canvas.height = Math.max(1, Math.round(imagem.height * escala));
+
+                const contexto = canvas.getContext("2d");
+                contexto.drawImage(imagem, 0, 0, canvas.width, canvas.height);
+
+                resolve(canvas.toDataURL("image/jpeg", 0.78));
+            };
+            imagem.onerror = function() { reject(new Error("Imagem inválida.")); };
+            imagem.src = leitor.result;
+        };
+        leitor.onerror = function() { reject(new Error("Não foi possível ler a imagem.")); };
+        leitor.readAsDataURL(arquivo);
+    });
+}
+
 function mostrarRegistros() {
     const registros = carregarRegistros();
     lista.innerHTML = "";
@@ -110,6 +152,12 @@ function mostrarRegistros() {
             const aviso = document.createElement("div");
             aviso.classList.add("aviso-analise");
             aviso.innerHTML = `<strong>${escapeHtml(registro.titulo)}</strong><br>Sua doação está sendo analisada por um administrador. Ela ficará visível no site somente após a aprovação.`;
+            const botaoRemover = document.createElement("button");
+            botaoRemover.type = "button";
+            botaoRemover.className = "botao-remover-doacao";
+            botaoRemover.textContent = "Remover minha doação";
+            botaoRemover.addEventListener("click", function() { removerDoacao(registro.id); });
+            aviso.appendChild(botaoRemover);
             lista.appendChild(aviso);
         });
     }
@@ -146,12 +194,28 @@ function mostrarRegistros() {
         const descricao = document.createElement("p");
         descricao.textContent = registro.descricao;
 
+        const galeria = criarGaleriaImagens(registro.imagens);
+        if (galeria) card.appendChild(galeria);
+
         card.appendChild(titulo);
         card.appendChild(categoria);
         card.appendChild(doador);
         card.appendChild(telefone);
         card.appendChild(localizacao);
         card.appendChild(descricao);
+
+        const sessaoAtual = obterSessao();
+        if (sessaoAtual && !sessaoAtual.admin && registro.doadorEmail === sessaoAtual.email) {
+            const botaoRemover = document.createElement("button");
+            botaoRemover.type = "button";
+            botaoRemover.className = "botao-remover-doacao";
+            botaoRemover.textContent = "Remover minha doação";
+            botaoRemover.addEventListener("click", function() {
+                removerDoacao(registro.id);
+            });
+            card.appendChild(botaoRemover);
+        }
+
         lista.appendChild(card);
     });
 
@@ -171,35 +235,29 @@ FUNÇÃO: EXCLUIR REGISTRO
 /*
 Recebe o índice do registro que deverá ser excluído.
 */
+function removerDoacao(id) {
+    const registros = carregarRegistros();
+    const sessao = obterSessao();
+    const indice = registros.findIndex(function(registro) { return registro.id === id; });
+
+    if (indice < 0 || !sessao) return;
+
+    const registro = registros[indice];
+    const permitido = sessao.admin || (!registro.doadorEmail || registro.doadorEmail === sessao.email);
+    if (!permitido) return;
+
+    const confirmado = window.confirm(`Tem certeza que deseja remover a doação "${registro.titulo}"? Esta ação não pode ser desfeita.`);
+    if (!confirmado) return;
+
+    registros.splice(indice, 1);
+    salvarRegistros(registros);
+    mostrarRegistros();
+}
+
 function excluirRegistro(indice) {
-
-/*
-   Carregamos todos os registros atualmente salvos.
-*/
-const registros = carregarRegistros();
-
-
-/*
-   Remove um item do array.
-
-   splice(indice, 1) significa:
-   - comece na posição indicada pelo índice;
-   - remova 1 item.
-*/
-registros.splice(indice, 1);
-
-
-/*
-   Salvamos novamente a lista modificada.
-*/
-salvarRegistros(registros);
-
-
-/*
-   Atualizamos os cards na tela.
-*/
-mostrarRegistros();
-
+    const registros = carregarRegistros();
+    if (!registros[indice]) return;
+    removerDoacao(registros[indice].id);
 }
 
 /* =========================================================
@@ -210,7 +268,39 @@ EVENTO DO FORMULÁRIO
 O evento "submit" acontece quando o usuário
 envia o formulário.
 */
-formulario.addEventListener("submit", function(event) {
+const campoImagensDoacao = document.getElementById("imagensDoacao");
+const previewImagensDoacao = document.getElementById("previewImagensDoacao");
+
+function mostrarPreviewImagens(arquivos) {
+    if (!previewImagensDoacao) return;
+    previewImagensDoacao.innerHTML = "";
+
+    arquivos.forEach(function(arquivo, indice) {
+        const item = document.createElement("div");
+        item.className = "preview-imagem-item";
+
+        const imagem = document.createElement("img");
+        imagem.alt = `Prévia da imagem ${indice + 1}`;
+        imagem.src = URL.createObjectURL(arquivo);
+        imagem.onload = function() { URL.revokeObjectURL(imagem.src); };
+
+        const nome = document.createElement("span");
+        nome.textContent = arquivo.name;
+
+        item.appendChild(imagem);
+        item.appendChild(nome);
+        previewImagensDoacao.appendChild(item);
+    });
+}
+
+if (campoImagensDoacao) {
+    campoImagensDoacao.addEventListener("change", function() {
+        const arquivos = Array.from(campoImagensDoacao.files || []);
+        mostrarPreviewImagens(arquivos.slice(0, 3));
+    });
+}
+
+formulario.addEventListener("submit", async function(event) {
     event.preventDefault();
 
     const sessao = obterSessao();
@@ -256,10 +346,75 @@ formulario.addEventListener("submit", function(event) {
     }
 
     const titulo = document.getElementById("titulo").value.trim();
-    const categoria = document.getElementById("categoria").value;
+    const categoria = document.getElementById("categoria").value.trim();
     const descricao = document.getElementById("descricao").value.trim();
+    const arquivos = Array.from(campoImagensDoacao.files || []);
+
+    if (!titulo || titulo.length < 3) {
+        mostrarMensagem("Campo incompleto", "Informe o nome do produto com pelo menos 3 caracteres.", "DOAÇÃO", "erro");
+        document.getElementById("titulo").focus();
+        return;
+    }
+
+    if (!categoria) {
+        mostrarMensagem("Categoria obrigatória", "Selecione uma categoria para a doação.", "DOAÇÃO", "erro");
+        document.getElementById("categoria").focus();
+        return;
+    }
+
+    if (!descricao || descricao.length < 10) {
+        mostrarMensagem("Descrição incompleta", "Descreva o produto com pelo menos 10 caracteres.", "DOAÇÃO", "erro");
+        document.getElementById("descricao").focus();
+        return;
+    }
+
+    if (arquivos.length < 1) {
+        mostrarMensagem(
+            "Foto obrigatória",
+            "Anexe pelo menos uma imagem do produto antes de enviar a doação.",
+            "DOAÇÃO",
+            "erro"
+        );
+        return;
+    }
+
+    if (arquivos.length > 3) {
+        mostrarMensagem(
+            "Limite de imagens",
+            "Você pode anexar no máximo 3 imagens por doação.",
+            "DOAÇÃO",
+            "erro"
+        );
+        return;
+    }
+
+    const formatosPermitidos = ["image/jpeg", "image/png", "image/webp"];
+    if (arquivos.some(function(arquivo) { return !formatosPermitidos.includes(arquivo.type); })) {
+        mostrarMensagem(
+            "Formato inválido",
+            "Use somente imagens JPG, PNG ou WebP.",
+            "DOAÇÃO",
+            "erro"
+        );
+        return;
+    }
+
+    let imagens;
+    try {
+        imagens = await Promise.all(arquivos.map(comprimirImagem));
+    } catch (erro) {
+        console.error(erro);
+        mostrarMensagem(
+            "Não foi possível anexar as imagens",
+            "Verifique os arquivos escolhidos e tente novamente.",
+            "DOAÇÃO",
+            "erro"
+        );
+        return;
+    }
 
     const novoRegistro = {
+        id: (crypto && crypto.randomUUID) ? crypto.randomUUID() : `doacao-${Date.now()}-${Math.random().toString(16).slice(2)}`,
         titulo: titulo,
         categoria: categoria,
         doadorNome: usuario.nome,
@@ -279,13 +434,15 @@ formulario.addEventListener("submit", function(event) {
         doadorSiafi: usuario.siafi,
         status: "pendente",
         criadoEm: new Date().toISOString(),
-        descricao: descricao
+        descricao: descricao,
+        imagens: imagens
     };
 
     const registros = carregarRegistros();
     registros.push(novoRegistro);
     salvarRegistros(registros);
     formulario.reset();
+    if (previewImagensDoacao) previewImagensDoacao.innerHTML = "";
     mostrarRegistros();
 
     mostrarMensagem(
@@ -417,19 +574,20 @@ function atualizarPainelAdmin() {
 
     painel.hidden = false;
     const registros = carregarRegistros();
-    const pendentes = registros.filter(function(registro) { return registro.status === "pendente"; });
     listaAdmin.innerHTML = "";
 
-    if (pendentes.length === 0) {
-        listaAdmin.innerHTML = "<p>Nenhuma doação aguardando análise.</p>";
+    if (registros.length === 0) {
+        listaAdmin.innerHTML = "<p>Nenhuma doação cadastrada.</p>";
         return;
     }
 
-    pendentes.forEach(function(registro) {
+    registros.forEach(function(registro) {
         const item = document.createElement("article");
         item.classList.add("card-admin");
+        const statusTexto = registro.status === "aprovado" ? "Aprovada" : registro.status === "rejeitado" ? "Rejeitada" : "Pendente";
         item.innerHTML = `
             <h3>${escapeHtml(registro.titulo)}</h3>
+            <p><strong>Status:</strong> ${statusTexto}</p>
             <p><strong>Categoria:</strong> ${escapeHtml(registro.categoria)}</p>
             <p><strong>Doador:</strong> ${escapeHtml(registro.doadorNome || "Não informado")}</p>
             <p><strong>Telefone:</strong> ${escapeHtml(formatarTelefone(registro.doadorTelefone) || "Não informado")}</p>
@@ -441,23 +599,44 @@ function atualizarPainelAdmin() {
                 <p><strong>Estado:</strong> ${escapeHtml(registro.doadorEstado || "Não informado")}</p>
             </div>
             <p><strong>Descrição:</strong> ${escapeHtml(registro.descricao)}</p>
-            <button type="button" data-acao="aprovar" data-indice="${registros.indexOf(registro)}">Aprovar</button>
-            <button type="button" data-acao="rejeitar" data-indice="${registros.indexOf(registro)}">Rejeitar</button>
+            ${Array.isArray(registro.imagens) && registro.imagens.length ? `
+                <div class="imagens-produto imagens-admin">
+                    ${registro.imagens.map((src, indice) => `<img src="${src}" alt="Foto ${indice + 1} da doação" loading="lazy">`).join("")}
+                </div>
+            ` : ""}
         `;
+
+        if (registro.status === "pendente") {
+            const aprovar = document.createElement("button");
+            aprovar.type = "button"; aprovar.textContent = "Aprovar";
+            aprovar.addEventListener("click", function() { alterarStatusDoacao(registro.id, "aprovado"); });
+            item.appendChild(aprovar);
+
+            const rejeitar = document.createElement("button");
+            rejeitar.type = "button"; rejeitar.textContent = "Rejeitar";
+            rejeitar.addEventListener("click", function() { alterarStatusDoacao(registro.id, "rejeitado"); });
+            item.appendChild(rejeitar);
+        }
+
+        const remover = document.createElement("button");
+        remover.type = "button";
+        remover.className = "botao-remover-doacao";
+        remover.textContent = "Remover doação";
+        remover.addEventListener("click", function() { removerDoacao(registro.id); });
+        item.appendChild(remover);
+
         listaAdmin.appendChild(item);
     });
+}
 
-    listaAdmin.querySelectorAll("button").forEach(function(botao) {
-        botao.addEventListener("click", function() {
-            const indice = Number(botao.dataset.indice);
-            const registrosAtuais = carregarRegistros();
-            if (!registrosAtuais[indice]) return;
-            registrosAtuais[indice].status = botao.dataset.acao === "aprovar" ? "aprovado" : "rejeitado";
-            registrosAtuais[indice].analisadoEm = new Date().toISOString();
-            salvarRegistros(registrosAtuais);
-            mostrarRegistros();
-        });
-    });
+function alterarStatusDoacao(id, novoStatus) {
+    const registros = carregarRegistros();
+    const registro = registros.find(function(item) { return item.id === id; });
+    if (!registro) return;
+    registro.status = novoStatus;
+    registro.analisadoEm = new Date().toISOString();
+    salvarRegistros(registros);
+    mostrarRegistros();
 }
 
 function atualizarSessao() {
@@ -566,6 +745,25 @@ if (modalBoasVindas) {
     });
 }
 
+async function verificarEmail(email) {
+    const formato = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    if (!formato.test(email)) return { valido: false, mensagem: "Informe um e-mail válido." };
+
+    const dominio = email.split("@")[1].toLowerCase();
+    try {
+        const resposta = await fetch(`https://dns.google/resolve?name=${encodeURIComponent(dominio)}&type=MX`, { headers: { Accept: "application/dns-json" } });
+        if (!resposta.ok) throw new Error("Falha na consulta DNS");
+        const dados = await resposta.json();
+        if (!Array.isArray(dados.Answer) || dados.Answer.length === 0) {
+            return { valido: false, mensagem: "Esse domínio não parece aceitar e-mails. Confira o endereço." };
+        }
+    } catch (erro) {
+        // A validação de sintaxe continua funcionando mesmo se o DNS estiver indisponível.
+        return { valido: true, aviso: "Não foi possível verificar o domínio agora." };
+    }
+    return { valido: true };
+}
+
 formCadastro.addEventListener("submit", async function(event) {
     event.preventDefault();
 
@@ -576,6 +774,12 @@ formCadastro.addEventListener("submit", async function(event) {
     const telefoneDigitos = telefone.replace(/\D/g, "");
     const nomeNormalizado = normalizarNome(nome);
     const senha = document.getElementById("cadastroSenha").value;
+
+    const emailVerificado = await verificarEmail(email);
+    if (!emailVerificado.valido) {
+        mensagemCadastro.textContent = emailVerificado.mensagem;
+        return;
+    }
 
     if (nomeNormalizado.length < 2) {
         mensagemCadastro.textContent = "Informe um nome válido.";

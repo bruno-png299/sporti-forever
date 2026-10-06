@@ -30,10 +30,17 @@
             </ul>
         </nav>
 
-        <div class="area-login">
-            <button type="button" id="botaoLogin" class="botao-login">Entrar</button>
-            <span id="usuarioLogado" class="usuario-logado" hidden></span>
-            <button type="button" id="botaoSair" class="botao-sair" hidden>Sair</button>
+        <div class="area-direita-header">
+            <div class="brasoes-header" aria-label="Identificação institucional">
+                <img src="imagens/brasao-parana.png" alt="Brasão do Estado do Paraná">
+                <img src="imagens/brasao-colegio.png" alt="Brasão do colégio">
+            </div>
+
+            <div class="area-login">
+                <button type="button" id="botaoLogin" class="botao-login">Entrar</button>
+                <span id="usuarioLogado" class="usuario-logado" hidden></span>
+                <button type="button" id="botaoSair" class="botao-sair" hidden>Sair</button>
+            </div>
         </div>
 
     </div>
@@ -239,7 +246,31 @@
                 </div>
 
 
-                <!-- Campo 3: Descrição do produto -->
+                <!-- Campo 3: Imagens do produto -->
+                <div class="campo-formulario">
+
+                    <label for="imagensDoacao">
+                        Fotos do produto
+                    </label>
+
+                    <input
+                        type="file"
+                        id="imagensDoacao"
+                        name="imagensDoacao"
+                        accept="image/jpeg,image/png,image/webp"
+                        multiple
+                        required
+                    >
+
+                    <small class="ajuda-imagem">
+                        Anexe de 1 a 3 imagens reais do produto. JPG, PNG ou WebP.
+                    </small>
+                    <div id="previewImagensDoacao" class="preview-imagens-doacao" aria-live="polite"></div>
+
+                </div>
+
+
+                <!-- Campo 4: Descrição do produto -->
                 <div class="campo-formulario">
 
                     <label for="descricao">
@@ -276,7 +307,7 @@
     <section id="painelAdmin" class="painel-admin" hidden>
         <div class="container">
             <h2>Área do administrador</h2>
-            <p>Revise os dados da doação e as informações de contato do doador antes de aprovar a publicação.</p>
+            <p>Revise as doações, altere o status das pendentes e remova qualquer doação quando necessário.</p>
             <div id="listaAdmin"></div>
         </div>
     </section>
@@ -444,18 +475,18 @@
         </p>
 
         <p>
-            Equipe: Aharon N.1, Bruno N.7, Lanna N.20
+            Equipe: Nome do Aluno 1, Nome do Aluno 2, Nome do Aluno 3
         </p>
 
         <p>
-            Turma: 2º B nem
+            Turma: 2º ano do Ensino Médio
         </p>
 
        <!-- Nome da escola acompanhado pelos dois brasões -->
 <div class="identificacao-escola">
 
     <p>
-        Colégio Estadual Cívico-Militar Tarquínio Santos
+        Escola: Nome da Escola
     </p>
 
     <!-- Brasão do Paraná -->

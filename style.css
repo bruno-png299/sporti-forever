@@ -140,6 +140,125 @@ nav a:hover {
 color: var(--cor-destaque);
 }
 
+
+/* =========================================================
+   CABEÇALHO — BRASÕES INSTITUCIONAIS
+   ========================================================= */
+.area-direita-header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 18px;
+    flex-shrink: 0;
+}
+
+.brasoes-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.brasoes-header img {
+    width: 38px;
+    height: 38px;
+    object-fit: contain;
+    display: block;
+}
+
+.campo-obrigatorio {
+    color: var(--cor-destaque);
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.ajuda-imagem {
+    display: block;
+    margin-top: 7px;
+    color: var(--cor-texto-secundario);
+    font-size: 0.85rem;
+}
+
+.campo-formulario input[type="file"] {
+    padding: 10px;
+    cursor: pointer;
+}
+
+.campo-formulario input[type="file"]::file-selector-button {
+    margin-right: 12px;
+    padding: 8px 12px;
+    border: 0;
+    border-radius: 6px;
+    background: var(--cor-destaque);
+    color: #111;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.imagens-produto {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin: 15px 0;
+}
+
+.imagens-produto img {
+    width: 100%;
+    height: 190px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #333;
+    background: #0b0b0b;
+}
+
+.imagens-admin {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+.imagens-admin img {
+    height: 170px;
+}
+
+@media (max-width: 900px) {
+    header .container {
+        flex-wrap: wrap;
+    }
+
+    .marca-sportzone {
+        order: 1;
+    }
+
+    nav {
+        order: 3;
+        width: 100%;
+    }
+
+    nav ul {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .area-direita-header {
+        order: 2;
+        margin-left: auto;
+    }
+}
+
+@media (max-width: 640px) {
+    .area-direita-header {
+        gap: 10px;
+    }
+
+    .brasoes-header img {
+        width: 32px;
+        height: 32px;
+    }
+
+    .usuario-logado {
+        max-width: 120px;
+    }
+}
+
 /* =========================================================
 HERO
 ========================================================= */
@@ -903,4 +1022,51 @@ MODERAÇÃO DE DOAÇÕES
     margin-top: -14px;
     font-size: 0.82rem;
     opacity: 0.72;
+}
+
+/* =========================================================
+   PRÉVIA DAS IMAGENS DA DOAÇÃO
+   ========================================================= */
+.preview-imagens-doacao {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.preview-imagem-item {
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 8px;
+    overflow: hidden;
+}
+
+.preview-imagem-item img {
+    width: 100%;
+    height: 150px;
+    display: block;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-bottom: 7px;
+}
+
+.preview-imagem-item span {
+    display: block;
+    color: #fff;
+    font-size: .8rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.botao-remover-doacao {
+    margin-top: 12px;
+    background: #9b1c1c !important;
+    color: #fff !important;
+    border: 1px solid #c83a3a !important;
+}
+
+.botao-remover-doacao:hover {
+    background: #c12727 !important;
 }
