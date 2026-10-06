@@ -304,10 +304,8 @@
          ÁREA DO ADMINISTRADOR
          Apenas a conta de administrador consegue visualizar.
          ========================================================= -->
-    <section id="painelAdmin" class="painel-admin" hidden>
+    <section id="painelAdmin" class="painel-admin" hidden aria-live="polite">
         <div class="container">
-            <h2>Área do administrador</h2>
-            <p>Revise as doações, altere o status das pendentes e remova qualquer doação quando necessário.</p>
             <div id="listaAdmin"></div>
         </div>
     </section>
@@ -528,7 +526,10 @@
         <span id="etiquetaMensagem" class="etiqueta-popup">SPORTZONE</span>
         <h2 id="tituloMensagem">Mensagem</h2>
         <p id="textoMensagem" class="texto-popup"></p>
-        <button type="button" id="botaoMensagem" class="botao-login-principal">Entendi</button>
+        <div class="acoes-popup-mensagem">
+            <button type="button" id="botaoCancelarMensagem" class="botao-popup-secundario" hidden>Cancelar</button>
+            <button type="button" id="botaoMensagem" class="botao-login-principal">Entendi</button>
+        </div>
     </div>
 </div>
 

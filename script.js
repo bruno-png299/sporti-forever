@@ -152,12 +152,6 @@ function mostrarRegistros() {
             const aviso = document.createElement("div");
             aviso.classList.add("aviso-analise");
             aviso.innerHTML = `<strong>${escapeHtml(registro.titulo)}</strong><br>Sua doação está sendo analisada por um administrador. Ela ficará visível no site somente após a aprovação.`;
-            const botaoRemover = document.createElement("button");
-            botaoRemover.type = "button";
-            botaoRemover.className = "botao-remover-doacao";
-            botaoRemover.textContent = "Remover minha doação";
-            botaoRemover.addEventListener("click", function() { removerDoacao(registro.id); });
-            aviso.appendChild(botaoRemover);
             lista.appendChild(aviso);
         });
     }
@@ -205,11 +199,16 @@ function mostrarRegistros() {
         card.appendChild(descricao);
 
         const sessaoAtual = obterSessao();
-        if (sessaoAtual && !sessaoAtual.admin && registro.doadorEmail === sessaoAtual.email) {
+        const emailDoador = (registro.doadorEmail || "").trim().toLowerCase();
+        const emailSessao = (sessaoAtual && sessaoAtual.email ? sessaoAtual.email : "").trim().toLowerCase();
+        const podeRemover = !!sessaoAtual && registro.status === "aprovado" &&
+            (sessaoAtual.admin || (emailDoador && emailDoador === emailSessao));
+
+        if (podeRemover) {
             const botaoRemover = document.createElement("button");
             botaoRemover.type = "button";
             botaoRemover.className = "botao-remover-doacao";
-            botaoRemover.textContent = "Remover minha doação";
+            botaoRemover.textContent = sessaoAtual.admin ? "Remover doação" : "Remover minha doação";
             botaoRemover.addEventListener("click", function() {
                 removerDoacao(registro.id);
             });
@@ -246,12 +245,15 @@ function removerDoacao(id) {
     const permitido = sessao.admin || (!registro.doadorEmail || registro.doadorEmail === sessao.email);
     if (!permitido) return;
 
-    const confirmado = window.confirm(`Tem certeza que deseja remover a doação "${registro.titulo}"? Esta ação não pode ser desfeita.`);
-    if (!confirmado) return;
+    mostrarConfirmacaoRemocao(registro.titulo, function() {
+        const registrosAtualizados = carregarRegistros();
+        const indiceAtualizado = registrosAtualizados.findIndex(function(item) { return item.id === id; });
+        if (indiceAtualizado < 0) return;
 
-    registros.splice(indice, 1);
-    salvarRegistros(registros);
-    mostrarRegistros();
+        registrosAtualizados.splice(indiceAtualizado, 1);
+        salvarRegistros(registrosAtualizados);
+        mostrarRegistros();
+    });
 }
 
 function excluirRegistro(indice) {
@@ -479,9 +481,12 @@ const SENHA_ADMIN = "admin123";
 const modalMensagem = document.getElementById("modalMensagem");
 const fecharMensagem = document.getElementById("fecharMensagem");
 const botaoMensagem = document.getElementById("botaoMensagem");
+const botaoCancelarMensagem = document.getElementById("botaoCancelarMensagem");
 
 function mostrarMensagem(titulo, texto, etiqueta, tipo = "sucesso", botao = "Entendi") {
     botaoMensagem.onclick = fecharMensagemModal;
+    botaoCancelarMensagem.hidden = true;
+    botaoCancelarMensagem.onclick = fecharMensagemModal;
     document.getElementById("tituloMensagem").textContent = titulo;
     document.getElementById("textoMensagem").textContent = texto;
     document.getElementById("etiquetaMensagem").textContent = etiqueta;
@@ -494,7 +499,27 @@ function mostrarMensagem(titulo, texto, etiqueta, tipo = "sucesso", botao = "Ent
 
 function fecharMensagemModal() {
     modalMensagem.hidden = true;
+    modalMensagem.classList.remove("popup-erro", "popup-confirmacao");
+    botaoCancelarMensagem.hidden = true;
+}
+
+function mostrarConfirmacaoRemocao(titulo, aoConfirmar) {
+    document.getElementById("tituloMensagem").textContent = "Remover esta doação?";
+    document.getElementById("textoMensagem").textContent = `Você está prestes a remover “${titulo}”. Essa ação é permanente e não poderá ser desfeita.`;
+    document.getElementById("etiquetaMensagem").textContent = "CONFIRMAÇÃO";
+    document.getElementById("iconeMensagem").textContent = "!";
     modalMensagem.classList.remove("popup-erro");
+    modalMensagem.classList.add("popup-confirmacao");
+    botaoCancelarMensagem.hidden = false;
+    botaoCancelarMensagem.textContent = "Cancelar";
+    botaoCancelarMensagem.onclick = fecharMensagemModal;
+    botaoMensagem.textContent = "Sim, remover doação";
+    botaoMensagem.onclick = function() {
+        fecharMensagemModal();
+        aoConfirmar();
+    };
+    modalMensagem.hidden = false;
+    botaoCancelarMensagem.focus();
 }
 
 fecharMensagem.addEventListener("click", fecharMensagemModal);
@@ -567,21 +592,23 @@ function atualizarPainelAdmin() {
     const sessao = obterSessao();
     if (!painel || !listaAdmin) return;
 
-    if (!sessao || !sessao.admin) {
+    const registros = carregarRegistros();
+    const pendentes = registros.filter(function(registro) {
+        return registro.status === "pendente";
+    });
+
+    // O painel só existe visualmente quando o administrador está logado
+    // e há novas doações aguardando aprovação.
+    if (!sessao || !sessao.admin || pendentes.length === 0) {
         painel.hidden = true;
+        listaAdmin.innerHTML = "";
         return;
     }
 
     painel.hidden = false;
-    const registros = carregarRegistros();
     listaAdmin.innerHTML = "";
 
-    if (registros.length === 0) {
-        listaAdmin.innerHTML = "<p>Nenhuma doação cadastrada.</p>";
-        return;
-    }
-
-    registros.forEach(function(registro) {
+    pendentes.forEach(function(registro) {
         const item = document.createElement("article");
         item.classList.add("card-admin");
         const statusTexto = registro.status === "aprovado" ? "Aprovada" : registro.status === "rejeitado" ? "Rejeitada" : "Pendente";
@@ -617,13 +644,6 @@ function atualizarPainelAdmin() {
             rejeitar.addEventListener("click", function() { alterarStatusDoacao(registro.id, "rejeitado"); });
             item.appendChild(rejeitar);
         }
-
-        const remover = document.createElement("button");
-        remover.type = "button";
-        remover.className = "botao-remover-doacao";
-        remover.textContent = "Remover doação";
-        remover.addEventListener("click", function() { removerDoacao(registro.id); });
-        item.appendChild(remover);
 
         listaAdmin.appendChild(item);
     });
