@@ -1499,3 +1499,117 @@ footer strong {
         grid-template-columns: 1fr;
     }
 }
+
+/* Chat, denúncias e personalização de perfil */
+.botao-perfil,.botao-chat-anuncio{border:1px solid #f4d000;background:#f4d000;color:#111;font-weight:800;border-radius:10px;padding:10px 15px;cursor:pointer;transition:transform .18s,background .18s}
+.botao-perfil:hover,.botao-chat-anuncio:hover{background:#ffe84d;transform:translateY(-1px)}
+.botao-chat-anuncio{display:block;width:100%;margin-top:14px;padding:12px}
+.caixa-chat{width:min(680px,94vw);max-height:90vh;display:flex;flex-direction:column}
+.mensagens-chat{background:#101010;border:1px solid #343434;border-radius:12px;padding:12px;min-height:180px;max-height:42vh;overflow:auto;display:flex;flex-direction:column;gap:10px}
+.mensagem-chat{background:#262626;border:1px solid #393939;border-radius:12px;padding:10px 12px;max-width:88%;align-self:flex-start;overflow-wrap:anywhere}
+.mensagem-chat.minha-mensagem{align-self:flex-end;background:#35300e;border-color:#8e7b00}
+.mensagem-chat small{display:block;color:#aaa;font-size:.72rem;margin-top:5px}
+.chat-encerrado{color:#ffd83d;text-align:center;font-weight:700}
+.form-chat{display:flex;gap:8px;margin-top:10px}.form-chat input{flex:1;min-width:0}
+.acoes-chat{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.botao-perigo{background:#8d2020!important;color:#fff!important;border:1px solid #c84b4b!important;border-radius:9px;padding:10px 14px;cursor:pointer}
+.form-denuncia,.form-perfil{display:flex;flex-direction:column;gap:10px;margin-top:14px}.form-denuncia label,.form-perfil label{font-weight:700}
+.form-denuncia select,.form-denuncia textarea,.form-perfil input:not([type=file]){width:100%;padding:11px;border-radius:8px;border:1px solid #555;background:#171717;color:#fff}
+.form-denuncia button,.form-perfil button,.form-chat button{background:#f4d000;color:#111;border:0;border-radius:9px;padding:11px 16px;font-weight:800;cursor:pointer}
+.preview-avatar{width:94px;height:94px;border-radius:50%;background:#282828;border:2px solid #f4d000;display:grid;place-items:center;font-size:2rem;overflow:hidden}
+.preview-avatar img{width:100%;height:100%;object-fit:cover}
+.texto-ajuda{font-size:.85rem;color:#bbb;margin:0}
+.transcricao-denuncia{max-height:280px;overflow:auto;background:#111;border:1px solid #3c3c3c;border-radius:10px;padding:10px;margin:12px 0}.transcricao-denuncia p{padding:7px 0;border-bottom:1px solid #292929;overflow-wrap:anywhere}
+.denuncia-admin button{margin:5px 8px 5px 0}
+@media(max-width:640px){.form-chat{flex-direction:column}.acoes-chat{flex-direction:column}.acoes-chat button{width:100%}.caixa-chat{padding:18px}.mensagem-chat{max-width:96%}}
+
+
+/* Botões minimalistas com ícones SVG locais */
+.botao-icone {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 40px; padding: 8px 12px; border: 1px solid #3b3b3b; border-radius: 12px;
+  background: #171717; color: #f6f6f6; cursor: pointer; font-weight: 700;
+  transition: border-color .18s, background .18s, transform .18s;
+}
+.botao-icone:hover { background: #242424; border-color: #f4d000; transform: translateY(-1px); }
+.botao-icone img { display: block; width: 22px; height: 22px; object-fit: contain; }
+.botao-icone:focus-visible, .botao-chat-anuncio:focus-visible, .botao-escolher-foto:focus-visible { outline: 2px solid #f4d000; outline-offset: 3px; }
+.botao-chat-anuncio { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; margin-top: 14px; padding: 12px 16px; border: 1px solid #f4d000; border-radius: 12px; background: #f4d000; color: #111; font-weight: 800; cursor: pointer; transition: background .18s, transform .18s; }
+.botao-chat-anuncio:hover { background: #ffe84d; transform: translateY(-1px); }
+.icone-botao-chat { width: 21px; height: 21px; display: block; object-fit: contain; }
+.seletor-foto-perfil { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; padding: 12px; background: #141414; border: 1px solid #3d3d3d; border-radius: 12px; }
+.seletor-foto-perfil input[type="file"] { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; clip-path: inset(50%); border: 0; }
+.botao-escolher-foto { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 14px; background: #f4d000; color: #111; border-radius: 9px; font-weight: 800; cursor: pointer; transition: background .18s, transform .18s; }
+.botao-escolher-foto:hover { background: #ffe84d; transform: translateY(-1px); }
+.botao-escolher-foto img { width: 19px; height: 19px; object-fit: contain; }
+.nome-arquivo-foto { min-width: 0; color: #bdbdbd; font-size: .86rem; overflow-wrap: anywhere; }
+@media (max-width: 640px) { .texto-botao-icone { display: none; } .botao-icone { width: 40px; padding: 8px; } .seletor-foto-perfil { align-items: flex-start; flex-direction: column; } }
+
+
+/* Botões minimalistas de chat e conversas */
+.botao-icone {
+  display:inline-flex; align-items:center; justify-content:center;
+  width:42px; height:42px; padding:9px; border-radius:50%;
+  background:transparent; border:1px solid #3b3b3b; cursor:pointer;
+  transition:background .18s,border-color .18s,transform .18s;
+}
+.botao-icone:hover { background:#242424; border-color:#f4d000; transform:translateY(-1px); }
+.botao-icone img { width:22px; height:22px; display:block; object-fit:contain; }
+.botao-chat-anuncio {
+  display:inline-flex; align-items:center; justify-content:center;
+  width:44px; height:44px; margin-top:12px; padding:10px;
+  border:1px solid #e3c600; border-radius:50%; background:#f4d000;
+  color:#111; cursor:pointer; transition:transform .18s,background .18s;
+}
+.botao-chat-anuncio:hover { background:#ffe84d; transform:translateY(-2px); }
+.botao-chat-anuncio .icone-botao-chat { width:22px; height:22px; object-fit:contain; }
+.botao-chat-anuncio:focus-visible,.botao-icone:focus-visible,.botao-escolher-foto:focus-visible { outline:2px solid #f4d000; outline-offset:3px; }
+/* Campo de foto de perfil estilizado como botão real */
+.seletor-foto-perfil { display:flex; align-items:center; flex-wrap:wrap; gap:12px; padding:14px; background:#141414; border:1px solid #383838; border-radius:12px; }
+.seletor-foto-perfil input[type=file] { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); clip-path:inset(50%); white-space:nowrap; }
+.botao-escolher-foto { display:inline-flex; align-items:center; justify-content:center; gap:9px; min-height:42px; padding:10px 16px; border:1px solid #f4d000; border-radius:9px; background:#f4d000; color:#111; font-weight:800; cursor:pointer; }
+.botao-escolher-foto img { width:19px; height:19px; object-fit:contain; }
+.nome-arquivo-foto { color:#c8c8c8; font-size:.9rem; overflow-wrap:anywhere; }
+@media(max-width:640px) { .botao-icone { width:40px; height:40px; } .seletor-foto-perfil { align-items:flex-start; flex-direction:column; } }
+
+/* Chat em duas colunas, com lista de conversas e denúncia discreta */
+.caixa-chat{width:min(1000px,96vw);}
+.layout-lista-chat{display:grid;grid-template-columns:minmax(190px, .75fr) minmax(0,1.6fr);gap:16px;min-height:390px;min-width:0}
+.lista-conversas-chat{background:#111;border:1px solid #303030;border-radius:14px;padding:12px;min-width:0;overflow:auto;max-height:65vh}
+.lista-conversas-chat h3{font-size:1rem;margin:4px 6px 12px;color:#f4d000}
+.item-conversa-chat{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:transparent;color:#fff;border:0;border-radius:10px;padding:10px 8px;cursor:pointer;min-width:0}
+.item-conversa-chat:hover,.item-conversa-chat.selecionada{background:#292929}
+.item-conversa-chat.selecionada{box-shadow:inset 3px 0 #f4d000}
+.avatar-conversa-chat{width:40px;height:40px;flex:0 0 40px;border-radius:50%;display:grid;place-items:center;background:#f4d000;color:#111;font-weight:900}
+.texto-item-conversa{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1}.texto-item-conversa strong,.texto-item-conversa small,.texto-item-conversa span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.texto-item-conversa small{color:#aaa}.texto-item-conversa span{font-size:.78rem;color:#c6c6c6}.lista-chat-vazia{font-size:.86rem;color:#aaa;padding:8px}
+.painel-conversa-chat{display:flex;flex-direction:column;min-width:0}.painel-conversa-chat .mensagens-chat{flex:1;min-height:240px;max-height:48vh}
+.acoes-chat{align-items:center;justify-content:space-between}.botao-denunciar-discreto{width:30px;height:30px;padding:0;display:inline-grid;place-items:center;border:1px solid #484848;border-radius:50%;background:transparent;color:#aaa;font-size:16px;cursor:pointer;opacity:.72}.botao-denunciar-discreto:hover{opacity:1;color:#ff7777;border-color:#a34b4b;background:#241515}.botao-secundario-chat{background:#222;color:#ddd;border:1px solid #444;border-radius:8px;padding:8px 12px;cursor:pointer}.botao-secundario-chat:hover{border-color:#777}.form-denuncia{background:#171717;border:1px solid #553333;border-radius:12px;padding:14px}.form-denuncia[hidden]{display:none!important}
+.denuncia-admin{position:relative;border-left:4px solid #f4d000;padding:18px;display:grid;gap:8px}.denuncia-admin h3{margin:0}.status-denuncia-admin{display:inline-block;width:max-content;text-transform:uppercase;font-size:.72rem;letter-spacing:.06em;background:#382f00;color:#ffe65c;border-radius:20px;padding:5px 9px}.produto-denuncia-admin{font-weight:700;margin:0}.denuncia-admin>p{margin:3px 0;overflow-wrap:anywhere}.detalhes-caso-denuncia{border:1px solid #383838;border-radius:10px;background:#111;overflow:hidden}.detalhes-caso-denuncia summary{padding:12px;cursor:pointer;font-weight:700;color:#f4d000}.detalhes-caso-denuncia[open] summary{border-bottom:1px solid #333}.detalhes-caso-denuncia .transcricao-denuncia{max-height:320px;margin:0;border:0;border-radius:0}.denuncia-admin button{width:max-content;max-width:100%}
+@media(max-width:680px){.layout-lista-chat{grid-template-columns:1fr;gap:10px}.lista-conversas-chat{max-height:190px}.painel-conversa-chat .mensagens-chat{min-height:200px;max-height:36vh}.caixa-chat{max-height:94vh;overflow:auto}.denuncia-admin button{width:100%}}
+
+/* Navegação por telas: lista de conversas ou conversa aberta */
+.cabecalho-chat{display:flex;align-items:center;gap:10px;margin:0 0 14px;min-width:0}
+.cabecalho-chat h2{margin:0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.voltar-lista-chats{flex:0 0 40px;width:40px;height:40px;border:1px solid #3a3a3a;border-radius:50%;background:#191919;color:#f4d000;font-size:27px;line-height:1;cursor:pointer;display:grid;place-items:center}
+.voltar-lista-chats:hover{background:#2a2a2a;border-color:#f4d000}
+.layout-lista-chat.mostrando-lista{display:block;min-height:300px}
+.layout-lista-chat.mostrando-lista .lista-conversas-chat{display:block;max-height:62vh;min-height:280px}
+.layout-lista-chat.mostrando-lista .painel-conversa-chat{display:none}
+.layout-lista-chat.mostrando-conversa{display:block;min-height:0}
+.layout-lista-chat.mostrando-conversa .lista-conversas-chat{display:none}
+.layout-lista-chat.mostrando-conversa .painel-conversa-chat{display:flex;min-height:0}
+.layout-lista-chat.mostrando-conversa .painel-conversa-chat .mensagens-chat{min-height:300px;max-height:48vh;width:100%;box-sizing:border-box}
+.item-conversa-chat{padding:13px 11px;border-bottom:1px solid #292929;border-radius:9px}
+.texto-item-conversa strong{font-size:.96rem;color:#fff}
+.texto-item-conversa small{font-size:.8rem;color:#f4d000}
+/* Campo de mensagem com aparência integrada ao chat */
+.form-chat{display:flex;align-items:center;gap:10px;margin-top:12px;padding:7px;background:#171717;border:1px solid #3b3b3b;border-radius:15px;transition:border-color .18s,box-shadow .18s}
+.form-chat:focus-within{border-color:#bda600;box-shadow:0 0 0 3px rgba(244,208,0,.09)}
+.form-chat input#textoChat{flex:1;min-width:0;width:100%;height:44px;margin:0;padding:0 13px;border:0!important;outline:0;background:transparent!important;color:#f5f5f5!important;box-shadow:none!important;font:inherit;font-size:.95rem}
+.form-chat input#textoChat::placeholder{color:#898989}
+.form-chat input#textoChat:disabled{opacity:.5;cursor:not-allowed}
+.form-chat button{flex:0 0 auto;min-height:42px;padding:0 18px;border-radius:11px;background:#f4d000;color:#111;border:0;font-weight:800;transition:background .18s,transform .18s}
+.form-chat button:hover:not(:disabled){background:#ffe84d;transform:translateY(-1px)}
+.form-chat button:disabled{opacity:.45;cursor:not-allowed}
+.acoes-chat{display:flex;gap:10px;margin-top:9px}
+@media(max-width:680px){.layout-lista-chat.mostrando-lista .lista-conversas-chat{min-height:240px;max-height:65vh}.layout-lista-chat.mostrando-conversa .painel-conversa-chat .mensagens-chat{min-height:240px;max-height:45vh}.form-chat{flex-direction:row}.form-chat button{width:auto}.acoes-chat{flex-direction:row}.caixa-chat{padding:18px}}

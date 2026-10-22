@@ -179,8 +179,8 @@ function mostrarRegistros() {
         const doador = document.createElement("p");
         doador.textContent = "Doador: " + (registro.doadorNome || "Não informado");
 
-        const telefone = document.createElement("p");
-        telefone.textContent = "Telefone: " + (registro.doadorTelefone ? formatarTelefone(registro.doadorTelefone) : "Não informado");
+        const contato = document.createElement("p");
+        contato.textContent = "Entre em contato com o anunciante pelo chat da SportZone.";
 
         const localizacao = document.createElement("p");
         localizacao.textContent = "Localização: " + (registro.doadorCidade && registro.doadorEstado ? registro.doadorCidade + " - " + registro.doadorEstado : "Não informada");
@@ -194,21 +194,45 @@ function mostrarRegistros() {
         card.appendChild(titulo);
         card.appendChild(categoria);
         card.appendChild(doador);
-        card.appendChild(telefone);
+        card.appendChild(contato);
         card.appendChild(localizacao);
         card.appendChild(descricao);
 
         const sessaoAtual = obterSessao();
+        if (sessaoAtual && !sessaoAtual.admin && sessaoAtual.email !== (registro.doadorEmail || "").toLowerCase()) {
+            const botaoConversar = document.createElement("button");
+            botaoConversar.type = "button";
+            botaoConversar.className = "botao-chat-anuncio";
+            botaoConversar.innerHTML = '<img src="imagens/icone-chat.svg" alt="" class="icone-botao-chat">';
+            botaoConversar.setAttribute("aria-label", "Conversar com anunciante");
+            botaoConversar.title = "Conversar com anunciante";
+            botaoConversar.addEventListener("click", function() { abrirConversa(registro); });
+            card.appendChild(botaoConversar);
+        } else if (!sessaoAtual) {
+            const botaoConversar = document.createElement("button");
+            botaoConversar.type = "button";
+            botaoConversar.className = "botao-chat-anuncio";
+            botaoConversar.innerHTML = '<img src="imagens/icone-chat.svg" alt="" class="icone-botao-chat">';
+            botaoConversar.setAttribute("aria-label", "Entre para conversar");
+            botaoConversar.title = "Entre para conversar";
+            botaoConversar.addEventListener("click", function() {
+                sessionStorage.setItem("sportzone_chat_pendente", registro.id);
+                abrirLogin();
+            });
+            card.appendChild(botaoConversar);
+        }
+
+        const sessaoAtualAtual = obterSessao();
         const emailDoador = (registro.doadorEmail || "").trim().toLowerCase();
-        const emailSessao = (sessaoAtual && sessaoAtual.email ? sessaoAtual.email : "").trim().toLowerCase();
-        const podeRemover = !!sessaoAtual && registro.status === "aprovado" &&
-            (sessaoAtual.admin || (emailDoador && emailDoador === emailSessao));
+        const emailSessao = (sessaoAtualAtual && sessaoAtualAtual.email ? sessaoAtualAtual.email : "").trim().toLowerCase();
+        const podeRemover = !!sessaoAtualAtual && registro.status === "aprovado" &&
+            (sessaoAtualAtual.admin || (emailDoador && emailDoador === emailSessao));
 
         if (podeRemover) {
             const botaoRemover = document.createElement("button");
             botaoRemover.type = "button";
             botaoRemover.className = "botao-remover-doacao";
-            botaoRemover.textContent = sessaoAtual.admin ? "Remover doação" : "Remover minha doação";
+            botaoRemover.textContent = sessaoAtualAtual.admin ? "Remover doação" : "Remover minha doação";
             botaoRemover.addEventListener("click", function() {
                 removerDoacao(registro.id);
             });
@@ -242,7 +266,7 @@ function removerDoacao(id) {
     if (indice < 0 || !sessao) return;
 
     const registro = registros[indice];
-    const permitido = sessao.admin || (!registro.doadorEmail || registro.doadorEmail === sessao.email);
+    const permitido = sessao.admin || (registro.status === "aprovado" && normalizarEmail(registro.doadorEmail) === normalizarEmail(sessao.email));
     if (!permitido) return;
 
     mostrarConfirmacaoRemocao(registro.titulo, function() {
@@ -252,7 +276,7 @@ function removerDoacao(id) {
 
         registrosAtualizados.splice(indiceAtualizado, 1);
         salvarRegistros(registrosAtualizados);
-        mostrarRegistros();
+        window.location.reload();
     });
 }
 
@@ -538,6 +562,8 @@ const botaoLogin = document.getElementById("botaoLogin");
 const fecharLogin = document.getElementById("fecharLogin");
 const botaoSair = document.getElementById("botaoSair");
 const usuarioLogado = document.getElementById("usuarioLogado");
+const botaoPerfil = document.getElementById("botaoPerfil");
+const botaoChatTopo = document.getElementById("botaoChat");
 
 const areaLoginFormulario = document.getElementById("areaLoginFormulario");
 const areaCadastroFormulario = document.getElementById("areaCadastroFormulario");
@@ -602,6 +628,7 @@ function atualizarPainelAdmin() {
     if (!sessao || !sessao.admin || pendentes.length === 0) {
         painel.hidden = true;
         listaAdmin.innerHTML = "";
+        if (typeof atualizarPainelDenuncias === "function") atualizarPainelDenuncias();
         return;
     }
 
@@ -647,6 +674,7 @@ function atualizarPainelAdmin() {
 
         listaAdmin.appendChild(item);
     });
+    if (typeof atualizarPainelDenuncias === "function") atualizarPainelDenuncias();
 }
 
 function alterarStatusDoacao(id, novoStatus) {
@@ -656,7 +684,7 @@ function alterarStatusDoacao(id, novoStatus) {
     registro.status = novoStatus;
     registro.analisadoEm = new Date().toISOString();
     salvarRegistros(registros);
-    mostrarRegistros();
+    window.location.reload();
 }
 
 function atualizarSessao() {
@@ -665,10 +693,14 @@ function atualizarSessao() {
     if (usuario) {
         usuarioLogado.textContent = usuario.admin ? "Olá, Administrador" : `Olá, ${usuario.nome}`;
         usuarioLogado.hidden = false;
+        botaoPerfil.hidden = !!usuario.admin;
+        botaoChatTopo.hidden = !!usuario.admin;
         botaoSair.hidden = false;
         botaoLogin.hidden = true;
     } else {
         usuarioLogado.hidden = true;
+        botaoPerfil.hidden = true;
+        botaoChatTopo.hidden = true;
         botaoSair.hidden = true;
         botaoLogin.hidden = false;
     }
@@ -898,9 +930,7 @@ formCadastro.addEventListener("submit", async function(event) {
     fecharModalLogin();
     atualizarSessao();
 
-    document.getElementById("mensagemBoasVindas").textContent = `Olá, ${nome}! Sua conta foi criada com sucesso. Agora você já pode participar das doações da SportZone.`;
-    document.getElementById("modalBoasVindas").hidden = false;
-    document.getElementById("fecharBoasVindas").focus();
+    window.location.reload();
 });
 
 formLogin.addEventListener("submit", function(event) {
@@ -917,19 +947,7 @@ formLogin.addEventListener("submit", function(event) {
         }));
         formLogin.reset();
         fecharModalLogin();
-        atualizarSessao();
-        mostrarRegistros();
-        mostrarMensagem(
-            "Bem-vindo, administrador!",
-            "Você entrou na área administrativa. Aqui você pode analisar as doações pendentes e decidir quais serão publicadas.",
-            "ÁREA ADMINISTRATIVA",
-            "sucesso",
-            "Ver doações"
-        );
-        botaoMensagem.onclick = function() {
-            fecharMensagemModal();
-            document.getElementById("painelAdmin").scrollIntoView({ behavior: "smooth", block: "start" });
-        };
+        window.location.reload();
         return;
     }
 
@@ -939,6 +957,10 @@ formLogin.addEventListener("submit", function(event) {
 
     if (!usuario) {
         mensagemLogin.textContent = "E-mail ou senha incorretos.";
+        return;
+    }
+    if (usuario.banido) {
+        mensagemLogin.textContent = "Esta conta foi suspensa pela administração.";
         return;
     }
 
@@ -965,30 +987,110 @@ formLogin.addEventListener("submit", function(event) {
 
     formLogin.reset();
     fecharModalLogin();
-    atualizarSessao();
-
-    mostrarMensagem(
-        `Bem-vindo(a) de volta, ${usuario.nome}!`,
-        "Login realizado com sucesso. Você já pode participar das doações da SportZone.",
-        "LOGIN REALIZADO",
-        "sucesso",
-        "Continuar"
-    );
+    window.location.reload();
 });
 
 botaoSair.addEventListener("click", function() {
     sessionStorage.removeItem(CHAVE_SESSAO);
-    atualizarSessao();
+    sessionStorage.removeItem("sportzone_chat_pendente");
+    window.location.reload();
 });
 
-/*
- * A sessão é temporária. Cada nova abertura/recarregamento do site
- * começa deslogada, enquanto o login continua válido durante a
- * sessão atual da página.
- */
-sessionStorage.removeItem(CHAVE_SESSAO);
 
+/* =========================================================
+   CHAT, DENÚNCIAS, ENCERRAMENTO E PERFIL
+   Dados locais de demonstração (localStorage).
+   ========================================================= */
+const CHAVE_CHATS = "sportzone_chats_v1";
+const CHAVE_DENUNCIAS = "sportzone_denuncias_v1";
+let conversaAtualId = null;
+let avatarPerfilPendente = null;
+const modalChat = document.getElementById("modalChat");
+const modalPerfil = document.getElementById("modalPerfil");
+const mensagensChat = document.getElementById("mensagensChat");
+const formChat = document.getElementById("formChat");
+const formDenuncia = document.getElementById("formDenuncia");
+const painelDenuncias = document.getElementById("painelDenuncias");
+function lerLista(chave) { try { return JSON.parse(localStorage.getItem(chave) || "[]"); } catch (_) { return []; } }
+function salvarLista(chave, dados) { localStorage.setItem(chave, JSON.stringify(dados)); }
+function normalizarEmail(v) { return (v || "").trim().toLowerCase(); }
+function nomeUsuarioDoChat(email) {
+ const sessao=obterSessao();
+ if(sessao && normalizarEmail(sessao.email)===normalizarEmail(email)) return sessao.nome || email;
+ const usuario=lerLista(CHAVE_USUARIOS).find(u=>normalizarEmail(u.email)===normalizarEmail(email));
+ return usuario?.nome || (email||"Contato");
+}
+function mostrarTelaListaChats() {
+ const layout=document.getElementById("layoutListaChat");
+ layout.classList.remove("mostrando-conversa"); layout.classList.add("mostrando-lista");
+ document.getElementById("voltarListaChats").hidden=true;
+ document.getElementById("tituloChat").textContent="Conversas";
+}
+function mostrarTelaConversaChat(chat) {
+ const layout=document.getElementById("layoutListaChat");
+ layout.classList.remove("mostrando-lista"); layout.classList.add("mostrando-conversa");
+ document.getElementById("voltarListaChats").hidden=false;
+ document.getElementById("tituloChat").textContent=nomeUsuarioDoChat(chat.participantes.find(e=>normalizarEmail(e)!==normalizarEmail(obterSessao()?.email))) || "Conversa";
+ formDenuncia.hidden=true;
+ document.getElementById("botaoDenunciar").hidden=!!chat.encerrado;
+ document.getElementById("botaoEncerrarChat").hidden=false;
+ document.getElementById("botaoEncerrarChat").textContent=chat.encerrado?"Conversa encerrada":"Encerrar conversa";
+ document.getElementById("botaoEncerrarChat").disabled=!!chat.encerrado;
+ document.getElementById("textoChat").disabled=!!chat.encerrado;
+ formChat.querySelector("button").disabled=!!chat.encerrado;
+ renderizarListaConversasChat(); renderizarMensagens();
+}
+function renderizarListaConversasChat() {
+ const sessao=obterSessao(); const alvo=document.getElementById("listaConversasChat"); if(!alvo||!sessao)return;
+ const chats=lerLista(CHAVE_CHATS).filter(c=>c.participantes.some(e=>normalizarEmail(e)===normalizarEmail(sessao.email))).sort((a,b)=>new Date(b.criadoEm)-new Date(a.criadoEm));
+ alvo.innerHTML="";
+ if(!chats.length){alvo.innerHTML='<p class="lista-chat-vazia">Você ainda não tem conversas. Abra um anúncio e toque no botão de mensagem para começar.</p>';return;}
+ chats.forEach(c=>{const outro=c.participantes.find(e=>normalizarEmail(e)!==normalizarEmail(sessao.email))||"Contato";const nomeOutro=nomeUsuarioDoChat(outro);const ultimo=c.mensagens?.[c.mensagens.length-1];const b=document.createElement("button");b.type="button";b.className="item-conversa-chat"+(c.id===conversaAtualId?" selecionada":"");b.innerHTML=`<span class="avatar-conversa-chat">${escapeHtml((nomeOutro[0]||"?").toUpperCase())}</span><span class="texto-item-conversa"><strong>${escapeHtml(nomeOutro)}</strong><small>${escapeHtml(c.produto||"Doação")}</small><span>${escapeHtml(ultimo?.texto||(c.encerrado?"Conversa encerrada":"Ainda sem mensagens"))}</span></span>`;
+ b.addEventListener("click",()=>{conversaAtualId=c.id;mostrarTelaConversaChat(c);});alvo.appendChild(b);});
+}
+
+function abrirConversa(registro) {
+ const sessao = obterSessao();
+ if (!sessao) { sessionStorage.setItem("sportzone_chat_pendente", registro.id); abrirLogin(); return; }
+ if (sessao.admin) { mostrarMensagem("Chat de usuário", "Entre com uma conta de usuário para conversar com o anunciante.", "CHAT", "erro"); return; }
+ const dono = normalizarEmail(registro.doadorEmail);
+ if (!dono || dono === normalizarEmail(sessao.email)) { mostrarMensagem("Conversa indisponível", "Você não pode iniciar uma conversa consigo mesmo.", "CHAT", "erro"); return; }
+ let chats = lerLista(CHAVE_CHATS);
+ let chat = chats.find(c => c.doacaoId === registro.id && [normalizarEmail(c.participantes[0]),normalizarEmail(c.participantes[1])].includes(normalizarEmail(sessao.email)) && c.participantes.some(e => normalizarEmail(e) === dono));
+ if (!chat) { chat = { id: "chat-" + Date.now() + Math.random().toString(16).slice(2), doacaoId: registro.id, produto: registro.titulo, participantes: [dono, normalizarEmail(sessao.email)], mensagens: [], encerrado: false, criadoEm: new Date().toISOString() }; chats.push(chat); salvarLista(CHAVE_CHATS,chats); }
+ conversaAtualId = chat.id; renderizarListaConversasChat(); mostrarTelaConversaChat(chat); modalChat.hidden = false;
+}
+function renderizarMensagens() {
+ const chat = lerLista(CHAVE_CHATS).find(c => c.id === conversaAtualId); mensagensChat.innerHTML = "";
+ if (!chat) { mensagensChat.textContent = "Conversa não encontrada."; return; }
+ if (chat.encerrado) { const info=document.createElement("p"); info.className="chat-encerrado"; info.textContent="Esta conversa foi encerrada."; mensagensChat.appendChild(info); }
+ chat.mensagens.forEach(m => { const el=document.createElement("div"); el.className="mensagem-chat"+(normalizarEmail(m.email)===normalizarEmail(obterSessao()?.email)?" minha-mensagem":""); const autor=document.createElement("strong"); autor.textContent=m.nome+" • "; const texto=document.createElement("span"); texto.textContent=m.texto; const data=document.createElement("small"); data.textContent=new Date(m.data).toLocaleString("pt-BR"); el.append(autor,texto,data); mensagensChat.appendChild(el); });
+ mensagensChat.scrollTop=mensagensChat.scrollHeight;
+}
+formChat.addEventListener("submit",function(e){e.preventDefault(); const sessao=obterSessao(); const texto=document.getElementById("textoChat").value.trim(); if(!sessao||!texto)return; const chats=lerLista(CHAVE_CHATS); const chat=chats.find(c=>c.id===conversaAtualId); if(!chat||chat.encerrado)return; if(chat.participantes.some(email=>lerLista("sportzone_usuarios").some(u=>normalizarEmail(u.email)===normalizarEmail(email)&&u.banido)))return; chat.mensagens.push({email:sessao.email,nome:sessao.nome,texto,data:new Date().toISOString()}); salvarLista(CHAVE_CHATS,chats); document.getElementById("textoChat").value=""; renderizarMensagens(); renderizarListaConversasChat(); });
+document.getElementById("fecharChat").addEventListener("click",()=>{modalChat.hidden=true;});
+modalChat.addEventListener("click",e=>{if(e.target===modalChat)modalChat.hidden=true;});
+document.getElementById("botaoDenunciar").addEventListener("click",()=>{formDenuncia.hidden=!formDenuncia.hidden;});
+formDenuncia.addEventListener("submit",function(e){e.preventDefault();const sessao=obterSessao();const chat=lerLista(CHAVE_CHATS).find(c=>c.id===conversaAtualId);const motivo=document.getElementById("motivoDenuncia").value;if(!sessao||!chat||!motivo)return;const denuncias=lerLista(CHAVE_DENUNCIAS);if(!denuncias.some(d=>d.chatId===chat.id&&normalizarEmail(d.denunciante)===normalizarEmail(sessao.email))){denuncias.push({id:"denuncia-"+Date.now(),chatId:chat.id,denunciante:sessao.email,alvo:chat.participantes.find(e=>normalizarEmail(e)!==normalizarEmail(sessao.email)),motivo,detalhes:document.getElementById("detalheDenuncia").value.trim(),data:new Date().toISOString(),status:"aberta"});salvarLista(CHAVE_DENUNCIAS,denuncias);} formDenuncia.reset();formDenuncia.hidden=true;modalChat.hidden=true;atualizarPainelDenuncias();mostrarMensagem("Denúncia enviada","A administração poderá revisar o motivo e o histórico completo desta conversa.","DENÚNCIA RECEBIDA");});
+document.getElementById("botaoEncerrarChat").addEventListener("click",function(){const chats=lerLista(CHAVE_CHATS);const chat=chats.find(c=>c.id===conversaAtualId);if(!chat||chat.encerrado)return;chat.encerrado=true;chat.encerradoEm=new Date().toISOString();salvarLista(CHAVE_CHATS,chats);renderizarMensagens();document.getElementById("botaoDenunciar").hidden=true;document.getElementById("botaoEncerrarChat").textContent="Conversa encerrada";document.getElementById("textoChat").disabled=true;formChat.querySelector("button").disabled=true;});
+function atualizarPainelDenuncias(){const sessao=obterSessao();const lista=document.getElementById("listaDenuncias");if(!sessao||!sessao.admin){painelDenuncias.hidden=true;return;}const denuncias=lerLista(CHAVE_DENUNCIAS);painelDenuncias.hidden=!denuncias.length;lista.innerHTML="";denuncias.forEach(d=>{const chat=lerLista(CHAVE_CHATS).find(c=>c.id===d.chatId);const card=document.createElement("article");card.className="card-admin denuncia-admin";const h=document.createElement("h3");h.textContent="Denúncia recebida";const info=document.createElement("p");info.textContent="Denunciante: "+d.denunciante+" | Conta denunciada: "+d.alvo;const motivo=document.createElement("p");motivo.textContent="Motivo: "+d.motivo+(d.detalhes?" — "+d.detalhes:"");const status=document.createElement("span");status.className="status-denuncia-admin";status.textContent=d.status||"aberta";const produto=document.createElement("p");produto.className="produto-denuncia-admin";produto.textContent="Anúncio relacionado: "+(chat?chat.produto:"conversa indisponível");card.append(h,status,produto,info,motivo);const detalhesCaso=document.createElement("details");detalhesCaso.className="detalhes-caso-denuncia";const resumoCaso=document.createElement("summary");resumoCaso.textContent="Ver histórico completo da conversa ("+(chat?chat.mensagens.length:0)+" mensagens)";detalhesCaso.appendChild(resumoCaso);const transcript=document.createElement("div");transcript.className="transcricao-denuncia";if(chat){chat.mensagens.forEach(m=>{const p=document.createElement("p");p.textContent=new Date(m.data).toLocaleString("pt-BR")+" • "+m.nome+": "+m.texto;transcript.appendChild(p);});if(!chat.mensagens.length)transcript.textContent="A conversa ainda não possui mensagens.";}detalhesCaso.appendChild(transcript);card.appendChild(detalhesCaso);const encerrar=document.createElement("button");encerrar.textContent=chat&&chat.encerrado?"Conversa encerrada":"Encerrar conversa";encerrar.disabled=!chat||chat.encerrado;encerrar.addEventListener("click",()=>{const chats=lerLista(CHAVE_CHATS);const c=chats.find(x=>x.id===d.chatId);if(c){c.encerrado=true;c.encerradoEm=new Date().toISOString();salvarLista(CHAVE_CHATS,chats);atualizarPainelDenuncias();}});card.appendChild(encerrar);const ban=document.createElement("button");ban.className="botao-perigo";ban.textContent="Banir conta denunciada";ban.addEventListener("click",()=>{if(!confirm("Banir a conta "+d.alvo+"? Ela não poderá entrar novamente."))return;const usuarios=lerLista(CHAVE_USUARIOS);const alvo=usuarios.find(u=>normalizarEmail(u.email)===normalizarEmail(d.alvo));if(alvo){alvo.banido=true;alvo.banidoEm=new Date().toISOString();salvarUsuarios(usuarios);d.status="conta banida";salvarLista(CHAVE_DENUNCIAS,denuncias);mostrarMensagem("Conta banida","A conta denunciada foi suspensa neste site.","MODERAÇÃO");}else mostrarMensagem("Conta não encontrada","Não foi possível localizar a conta para banir.","MODERAÇÃO","erro");atualizarPainelDenuncias();});card.appendChild(ban);lista.appendChild(card);});}
+const botaoPerfilEl=document.getElementById("botaoPerfil");
+botaoPerfilEl.addEventListener("click",()=>{const sessao=obterSessao();if(!sessao||sessao.admin)return;const u=lerLista(CHAVE_USUARIOS).find(x=>normalizarEmail(x.email)===normalizarEmail(sessao.email));if(!u)return;document.getElementById("nomePerfil").value=u.nome||"";document.getElementById("telefonePerfil").value=u.telefone||"";avatarPerfilPendente=u.avatar||null;document.getElementById("previewAvatar").innerHTML="";if(avatarPerfilPendente){const img=document.createElement("img");img.src=avatarPerfilPendente;document.getElementById("previewAvatar").appendChild(img);}else document.getElementById("previewAvatar").textContent="👤";modalPerfil.hidden=false;});
+document.getElementById("fecharPerfil").addEventListener("click",()=>modalPerfil.hidden=true);
+modalPerfil.addEventListener("click",e=>{if(e.target===modalPerfil)modalPerfil.hidden=true;});
+document.getElementById("fotoPerfil").addEventListener("change",function(){const file=this.files[0];if(!file)return;if(file.size>2*1024*1024){mostrarMensagem("Imagem muito grande","Escolha uma imagem de até 2 MB.","PERFIL","erro");this.value="";return;}const reader=new FileReader();reader.onload=()=>{avatarPerfilPendente=reader.result;const img=document.createElement("img");img.src=avatarPerfilPendente;const preview=document.getElementById("previewAvatar");preview.innerHTML="";preview.appendChild(img);};reader.readAsDataURL(file);});
+document.getElementById("telefonePerfil").addEventListener("input",function(){this.value=formatarTelefone(this.value);});
+document.getElementById("formPerfil").addEventListener("submit",function(e){e.preventDefault();const sessao=obterSessao();if(!sessao)return;const nome=document.getElementById("nomePerfil").value.trim();const telefone=formatarTelefone(document.getElementById("telefonePerfil").value);if(nome.length<2||(telefone.replace(/\D/g,"").length!==11)){mostrarMensagem("Confira os dados","Informe nome válido e telefone com DDD.","PERFIL","erro");return;}const usuarios=lerLista(CHAVE_USUARIOS);const u=usuarios.find(x=>normalizarEmail(x.email)===normalizarEmail(sessao.email));if(!u)return;u.nome=nome;u.telefone=telefone;u.avatar=avatarPerfilPendente;salvarUsuarios(usuarios);sessao.nome=nome;sessao.telefone=telefone;sessao.avatar=avatarPerfilPendente;sessionStorage.setItem(CHAVE_SESSAO,JSON.stringify(sessao));modalPerfil.hidden=true;window.location.reload();});
+botaoChatTopo.addEventListener("click",()=>{const sessao=obterSessao();if(!sessao)return;conversaAtualId=null;formDenuncia.hidden=true;document.getElementById("botaoDenunciar").hidden=true;document.getElementById("botaoEncerrarChat").hidden=true;document.getElementById("textoChat").disabled=true;formChat.querySelector("button").disabled=true;renderizarListaConversasChat();mostrarTelaListaChats();modalChat.hidden=false;});
+document.getElementById("voltarListaChats").addEventListener("click",()=>{conversaAtualId=null;formDenuncia.hidden=true;document.getElementById("botaoDenunciar").hidden=true;document.getElementById("botaoEncerrarChat").hidden=true;document.getElementById("textoChat").disabled=true;formChat.querySelector("button").disabled=true;mostrarTelaListaChats();renderizarListaConversasChat();});
+
+
+/*
+ * A sessão fica no sessionStorage: permanece ativa durante recargas,
+ * mas é descartada quando a aba/sessão do navegador termina.
+ */
 atualizarSessao();
+atualizarPainelDenuncias();
 
 /* =========================================================
 CARREGAMENTO INICIAL
@@ -1002,3 +1104,14 @@ Isso faz com que os dados anteriormente salvos
 apareçam automaticamente na tela.
 */
 mostrarRegistros();
+
+const chatPendenteId = sessionStorage.getItem("sportzone_chat_pendente");
+if (chatPendenteId && obterSessao() && !obterSessao().admin) {
+    sessionStorage.removeItem("sportzone_chat_pendente");
+    const anuncioPendente = carregarRegistros().find(r => r.id === chatPendenteId && r.status === "aprovado");
+    if (anuncioPendente) abrirConversa(anuncioPendente);
+}
+
+const inputFotoPerfil = document.getElementById("fotoPerfil");
+const nomeArquivoFoto = document.getElementById("nomeArquivoFoto");
+if (inputFotoPerfil && nomeArquivoFoto) inputFotoPerfil.addEventListener("change", () => { nomeArquivoFoto.textContent = inputFotoPerfil.files && inputFotoPerfil.files[0] ? inputFotoPerfil.files[0].name : "Nenhuma foto selecionada"; });

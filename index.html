@@ -39,6 +39,8 @@
             <div class="area-login">
                 <button type="button" id="botaoLogin" class="botao-login">Entrar</button>
                 <span id="usuarioLogado" class="usuario-logado" hidden></span>
+                <button type="button" id="botaoPerfil" class="botao-perfil" hidden>Meu perfil</button>
+                <button type="button" id="botaoChat" class="botao-icone" aria-label="Abrir conversas" title="Conversas" hidden><img src="imagens/icone-conversas.svg" alt=""></button>
                 <button type="button" id="botaoSair" class="botao-sair" hidden>Sair</button>
             </div>
         </div>
@@ -506,19 +508,34 @@
         </p>
 
         <p>
-            Equipe: Aharon n.1 ; bruno n.7 ; e lanna n.20
+            Equipe: Nome do Aluno 1, Nome do Aluno 2, Nome do Aluno 3
         </p>
 
         <p>
             Turma: 2º ano do Ensino Médio
         </p>
 
-       <!-- Nome da escola -->
+       <!-- Nome da escola acompanhado pelos dois brasões -->
 <div class="identificacao-escola">
 
     <p>
-        Escola: Colégio Cívico-Militar Tarquínio Santos
+        Escola: Nome da Escola
     </p>
+
+    <!-- Brasão do Paraná -->
+    <img
+        src="imagens/brasao-parana.png"
+        alt="Brasão do Estado do Paraná"
+    >
+
+    <!-- Brasão do colégio -->
+    <img
+        src="imagens/brasao-colegio.png"
+        alt="Brasão do colégio"
+    >
+
+</div>
+
 
     </div>
 
@@ -549,6 +566,44 @@
             <button type="button" id="botaoMensagem" class="botao-login-principal">Entendi</button>
         </div>
     </div>
+</div>
+
+
+<!-- Área de denúncias e conversas para administração -->
+<section id="painelDenuncias" class="painel-admin" hidden aria-live="polite">
+  <div class="container"><h2>Denúncias de conversas</h2><div id="listaDenuncias"></div></div>
+</section>
+
+<div id="modalChat" class="modal-login" hidden>
+ <div class="caixa-login caixa-chat" role="dialog" aria-modal="true" aria-labelledby="tituloChat">
+  <button type="button" class="fechar-login" id="fecharChat" aria-label="Fechar">×</button>
+  <span class="etiqueta-popup">SPORTZONE • MENSAGENS</span><div class="cabecalho-chat"><button type="button" id="voltarListaChats" class="voltar-lista-chats" aria-label="Voltar para a lista de conversas" hidden>←</button><h2 id="tituloChat">Conversas</h2></div>
+  <div id="layoutListaChat" class="layout-lista-chat mostrando-lista"><aside class="lista-conversas-chat" aria-label="Suas conversas"><h3>Suas conversas</h3><div id="listaConversasChat"></div></aside><div class="painel-conversa-chat"><div id="mensagensChat" class="mensagens-chat" aria-live="polite"></div>
+  <form id="formChat" class="form-chat"><input id="textoChat" maxlength="1000" placeholder="Escreva uma mensagem..." required><button type="submit">Enviar</button></form>
+  <div class="acoes-chat"><button id="botaoDenunciar" type="button" class="botao-denunciar-discreto" title="Denunciar conversa" aria-label="Denunciar conversa">⚑</button><button id="botaoEncerrarChat" type="button" class="botao-secundario-chat">Encerrar conversa</button></div>
+  <form id="formDenuncia" class="form-denuncia" hidden>
+   <label for="motivoDenuncia">Motivo da denúncia</label>
+   <select id="motivoDenuncia" required><option value="">Selecione um motivo</option><option>Assédio ou ofensas</option><option>Spam ou mensagens repetidas</option><option>Golpe ou tentativa de fraude</option><option>Conteúdo impróprio</option><option>Ameaças</option><option>Outro</option></select>
+   <textarea id="detalheDenuncia" rows="3" maxlength="500" placeholder="Detalhes adicionais (opcional)"></textarea>
+   <button type="submit">Enviar denúncia</button>
+  </form>
+  </div></div>
+ </div>
+</div>
+
+<div id="modalPerfil" class="modal-login" hidden>
+ <div class="caixa-login" role="dialog" aria-modal="true" aria-labelledby="tituloPerfil">
+  <button type="button" class="fechar-login" id="fecharPerfil" aria-label="Fechar">×</button>
+  <span class="etiqueta-popup">SUA CONTA</span><h2 id="tituloPerfil">Personalizar perfil</h2>
+  <form id="formPerfil" class="form-perfil">
+   <div id="previewAvatar" class="preview-avatar">👤</div>
+   <label for="fotoPerfil">Foto de perfil</label><div class="seletor-foto-perfil"><input id="fotoPerfil" type="file" accept="image/png,image/jpeg,image/webp"><label for="fotoPerfil" class="botao-escolher-foto"><img src="imagens/icone-foto.svg" alt=""><span>Escolher foto</span></label><span id="nomeArquivoFoto" class="nome-arquivo-foto">Nenhuma foto selecionada</span></div>
+   <label for="nomePerfil">Nome</label><input id="nomePerfil" required minlength="2" maxlength="60">
+   <label for="telefonePerfil">Telefone</label><input id="telefonePerfil" inputmode="tel" placeholder="(00) 00000-0000" required>
+   <p class="texto-ajuda">O e-mail não pode ser alterado nesta tela.</p>
+   <button type="submit">Salvar perfil</button>
+  </form>
+ </div>
 </div>
 
 <!-- O script fica no final para que todos os elementos HTML já existam. -->
